@@ -15,7 +15,7 @@ export async function searchAlbumsITunes(query: string): Promise<Album[]> {
     const data = await response.json();
 
     return data.results.map((item: any) => ({
-      id: `itunes-${item.collectionId}-${Date.now()}`,
+      id: `itunes-${item.collectionId}`,
       name: item.collectionName,
       artist: item.artistName,
       imageUrl: item.artworkUrl100.replace('100x100bb', '600x600bb'), // Get higher resolution
