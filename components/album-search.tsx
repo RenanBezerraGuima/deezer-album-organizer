@@ -5,13 +5,14 @@ import { Search, Loader2, Check } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useFolderStore } from '@/lib/store';
-import type { SpotifyAlbum, Album, Folder } from '@/lib/types';
+import type { Album, Folder } from '@/lib/types';
 import { useDebounce } from '@/hooks/use-debounce';
+import { searchAlbumsITunes } from '@/lib/search-service';
 import { cn } from '@/lib/utils';
 
 export function AlbumSearch() {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<SpotifyAlbum[]>([]);
+  const [results, setResults] = useState<Album[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -35,7 +36,7 @@ export function AlbumSearch() {
     const folder = findFolder(folders);
     if (!folder) return new Set<string>();
     
-    return new Set(folder.albums.map(a => a.spotifyId));
+    return new Set(folder.albums.map(a => `${a.name}-${a.artist}`));
   }, [selectedFolderId, folders]);
 
   // Close dropdown when clicking outside
@@ -61,19 +62,11 @@ export function AlbumSearch() {
     setError(null);
 
     try {
-      const response = await fetch(
-        `/api/spotify/search?q=${encodeURIComponent(searchQuery)}`
-      );
-      
-      if (!response.ok) {
-        throw new Error('Failed to search albums');
-      }
-
-      const data = await response.json();
+      const data = await searchAlbumsITunes(searchQuery);
       setResults(data);
       setIsOpen(true);
     } catch (err) {
-      setError('Failed to search albums. Please try again.');
+      setError(err instanceof Error ? err.message : 'Failed to search albums. Please try again.');
       setIsOpen(true);
       console.error(err);
     } finally {
@@ -95,22 +88,11 @@ export function AlbumSearch() {
     }
   };
 
-  const handleAddAlbum = (spotifyAlbum: SpotifyAlbum) => {
+  const handleAddAlbum = (album: Album) => {
     if (!selectedFolderId) {
       setError('Please select a folder first');
       return;
     }
-
-    const album: Album = {
-      id: `${spotifyAlbum.id}-${Date.now()}`,
-      spotifyId: spotifyAlbum.id,
-      name: spotifyAlbum.name,
-      artist: spotifyAlbum.artists.map((a) => a.name).join(', '),
-      imageUrl: spotifyAlbum.images[0]?.url || '',
-      releaseDate: spotifyAlbum.release_date,
-      totalTracks: spotifyAlbum.total_tracks,
-      spotifyUrl: spotifyAlbum.external_urls.spotify,
-    };
 
     addAlbumToFolder(selectedFolderId, album);
   };
@@ -121,7 +103,7 @@ export function AlbumSearch() {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search Spotify albums..."
+            placeholder="Search albums..."
             value={query}
             onChange={handleSearchChange}
             onFocus={handleFocus}
@@ -147,7 +129,7 @@ export function AlbumSearch() {
                 )}
 
                 {results.map((album) => {
-                  const isAdded = albumsInSelectedFolder.has(album.id);
+                  const isAdded = albumsInSelectedFolder.has(`${album.name}-${album.artist}`);
                   
                   return (
                     <div
@@ -162,7 +144,7 @@ export function AlbumSearch() {
                       )}
                     >
                       <img
-                        src={album.images[0]?.url || "/placeholder.svg"}
+                        src={album.imageUrl || "/placeholder.svg"}
                         alt={album.name}
                         className="w-12 h-12 rounded object-cover shrink-0 bg-muted"
                       />
@@ -171,7 +153,7 @@ export function AlbumSearch() {
                           {album.name}
                         </p>
                         <p className="text-xs text-muted-foreground truncate">
-                          {album.artists.map((a) => a.name).join(', ')} • {album.release_date?.slice(0, 4)}
+                          {album.artist} • {album.releaseDate?.slice(0, 4)}
                         </p>
                       </div>
                       {isAdded && (
