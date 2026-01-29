@@ -318,7 +318,7 @@ export function FolderTree() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="p-4 border-b border-border flex items-center justify-between shrink-0">
+      <div className="h-[73px] p-4 border-b border-border flex items-center justify-between shrink-0">
         <h2 className="text-lg font-semibold text-foreground">Folders</h2>
         <Button
           size="icon"

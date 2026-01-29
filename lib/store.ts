@@ -215,8 +215,14 @@ export const useFolderStore = create<FolderStore>()(
       addAlbumToFolder: (folderId, album) => {
         set((state) => ({
           folders: updateFolderInTree(state.folders, folderId, (folder) => {
-            // Check by spotifyId to prevent duplicates
-            if (folder.albums.some((a) => a.spotifyId === album.spotifyId)) {
+            // Check by id or spotifyId to prevent duplicates
+            const isDuplicate = folder.albums.some((a) => {
+              if (a.id === album.id) return true;
+              if (a.spotifyId && album.spotifyId && a.spotifyId === album.spotifyId) return true;
+              return false;
+            });
+
+            if (isDuplicate) {
               return folder;
             }
             return {

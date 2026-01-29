@@ -95,7 +95,7 @@ export function AlbumGrid() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="p-4 border-b border-border shrink-0">
+      <div className="h-[73px] p-4 border-b border-border shrink-0 flex flex-col justify-center">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
           {breadcrumb.map((name, index) => (
             <span key={index} className="flex items-center gap-2">
