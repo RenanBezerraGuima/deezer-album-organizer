@@ -48,6 +48,11 @@ export function AlbumCard({ album, folderId }: AlbumCardProps) {
       const response = await fetch(
         `/api/deezer?album=${encodeURIComponent(album.name)}&artist=${encodeURIComponent(album.artist)}`
       );
+
+      if (!response.ok) {
+        throw new Error('API not available');
+      }
+
       const data = await response.json();
       
       if (data.deezerUrl) {

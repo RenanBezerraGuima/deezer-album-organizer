@@ -66,6 +66,9 @@ export function AlbumSearch() {
       );
       
       if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Search API not found. GitHub Pages does not support API routes.');
+        }
         throw new Error('Failed to search albums');
       }
 
@@ -73,7 +76,7 @@ export function AlbumSearch() {
       setResults(data);
       setIsOpen(true);
     } catch (err) {
-      setError('Failed to search albums. Please try again.');
+      setError(err instanceof Error ? err.message : 'Failed to search albums. Please try again.');
       setIsOpen(true);
       console.error(err);
     } finally {
