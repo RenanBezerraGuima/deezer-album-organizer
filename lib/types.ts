@@ -1,12 +1,13 @@
 export interface Album {
   id: string;
-  spotifyId: string;
+  spotifyId?: string;
   name: string;
   artist: string;
   imageUrl: string;
   releaseDate: string;
   totalTracks: number;
-  spotifyUrl: string;
+  spotifyUrl?: string;
+  externalUrl?: string;
 }
 
 export interface Folder {

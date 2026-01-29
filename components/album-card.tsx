@@ -37,42 +37,12 @@ export function AlbumCard({ album, folderId }: AlbumCardProps) {
     removeAlbumFromFolder(folderId, album.id);
   };
 
-  const handleOpenDeezer = async () => {
-    if (deezerUrl) {
-      window.open(deezerUrl, '_blank');
-      return;
-    }
-
-    setIsLoadingDeezer(true);
-    try {
-      const response = await fetch(
-        `/api/deezer?album=${encodeURIComponent(album.name)}&artist=${encodeURIComponent(album.artist)}`
-      );
-
-      if (!response.ok) {
-        throw new Error('API not available');
-      }
-
-      const data = await response.json();
-      
-      if (data.deezerUrl) {
-        setDeezerUrl(data.deezerUrl);
-        window.open(data.deezerUrl, '_blank');
-      } else {
-        window.open(
-          `https://www.deezer.com/search/${encodeURIComponent(`${album.name} ${album.artist}`)}`,
-          '_blank'
-        );
-      }
-    } catch (error) {
-      console.error('Failed to get Deezer link:', error);
-      window.open(
-        `https://www.deezer.com/search/${encodeURIComponent(`${album.name} ${album.artist}`)}`,
-        '_blank'
-      );
-    } finally {
-      setIsLoadingDeezer(false);
-    }
+  const handleOpenDeezer = () => {
+    const searchQuery = `${album.name} ${album.artist}`;
+    window.open(
+      `https://www.deezer.com/search/${encodeURIComponent(searchQuery)}`,
+      '_blank'
+    );
   };
 
   return (
