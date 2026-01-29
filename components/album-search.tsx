@@ -1,0 +1,190 @@
+'use client';
+
+import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { Search, Loader2, Check } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useFolderStore } from '@/lib/store';
+import type { SpotifyAlbum, Album, Folder } from '@/lib/types';
+import { useDebounce } from '@/hooks/use-debounce';
+import { cn } from '@/lib/utils';
+
+export function AlbumSearch() {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<SpotifyAlbum[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  const { selectedFolderId, addAlbumToFolder, folders } = useFolderStore();
+  
+  // Get albums in selected folder
+  const albumsInSelectedFolder = useMemo(() => {
+    if (!selectedFolderId) return new Set<string>();
+    
+    const findFolder = (folderList: Folder[]): Folder | null => {
+      for (const folder of folderList) {
+        if (folder.id === selectedFolderId) return folder;
+        const found = findFolder(folder.subfolders);
+        if (found) return found;
+      }
+      return null;
+    };
+    
+    const folder = findFolder(folders);
+    if (!folder) return new Set<string>();
+    
+    return new Set(folder.albums.map(a => a.spotifyId));
+  }, [selectedFolderId, folders]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const searchAlbums = useCallback(async (searchQuery: string) => {
+    if (!searchQuery.trim()) {
+      setResults([]);
+      setIsOpen(false);
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `/api/spotify/search?q=${encodeURIComponent(searchQuery)}`
+      );
+      
+      if (!response.ok) {
+        throw new Error('Failed to search albums');
+      }
+
+      const data = await response.json();
+      setResults(data);
+      setIsOpen(true);
+    } catch (err) {
+      setError('Failed to search albums. Please try again.');
+      setIsOpen(true);
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const debouncedSearch = useDebounce(searchAlbums, 500);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setQuery(value);
+    debouncedSearch(value);
+  };
+
+  const handleFocus = () => {
+    if (results.length > 0 || error) {
+      setIsOpen(true);
+    }
+  };
+
+  const handleAddAlbum = (spotifyAlbum: SpotifyAlbum) => {
+    if (!selectedFolderId) {
+      setError('Please select a folder first');
+      return;
+    }
+
+    const album: Album = {
+      id: `${spotifyAlbum.id}-${Date.now()}`,
+      spotifyId: spotifyAlbum.id,
+      name: spotifyAlbum.name,
+      artist: spotifyAlbum.artists.map((a) => a.name).join(', '),
+      imageUrl: spotifyAlbum.images[0]?.url || '',
+      releaseDate: spotifyAlbum.release_date,
+      totalTracks: spotifyAlbum.total_tracks,
+      spotifyUrl: spotifyAlbum.external_urls.spotify,
+    };
+
+    addAlbumToFolder(selectedFolderId, album);
+  };
+
+  return (
+    <div className="w-full flex justify-center px-4 py-3 border-b border-border bg-background">
+      <div className="w-full max-w-2xl relative" ref={containerRef}>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search Spotify albums..."
+            value={query}
+            onChange={handleSearchChange}
+            onFocus={handleFocus}
+            className="pl-9 w-full"
+          />
+          {isLoading && (
+            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+          )}
+        </div>
+
+        {!selectedFolderId && query && (
+          <p className="text-xs text-amber-500 mt-2 text-center">
+            Select a folder to add albums
+          </p>
+        )}
+
+        {isOpen && (results.length > 0 || error) && (
+          <div className="absolute left-0 right-0 top-full mt-2 z-50 bg-background border border-border rounded-lg shadow-lg overflow-hidden">
+            <ScrollArea className="h-[384px]">
+              <div className="p-2 space-y-1">
+                {error && (
+                  <p className="text-sm text-destructive text-center py-2">{error}</p>
+                )}
+
+                {results.map((album) => {
+                  const isAdded = albumsInSelectedFolder.has(album.id);
+                  
+                  return (
+                    <div
+                      key={album.id}
+                      onClick={() => handleAddAlbum(album)}
+                      className={cn(
+                        "flex items-center gap-3 p-2 rounded-lg transition-colors",
+                        selectedFolderId 
+                          ? "cursor-pointer hover:bg-secondary active:bg-secondary/80" 
+                          : "opacity-60 cursor-not-allowed",
+                        isAdded && "bg-green-500/10"
+                      )}
+                    >
+                      <img
+                        src={album.images[0]?.url || "/placeholder.svg"}
+                        alt={album.name}
+                        className="w-12 h-12 rounded object-cover shrink-0 bg-muted"
+                      />
+                      <div className="flex-1 min-w-0 overflow-hidden">
+                        <p className="text-sm font-medium text-foreground truncate">
+                          {album.name}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {album.artists.map((a) => a.name).join(', ')} • {album.release_date?.slice(0, 4)}
+                        </p>
+                      </div>
+                      {isAdded && (
+                        <Check className="h-4 w-4 text-green-500 shrink-0" />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </ScrollArea>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
