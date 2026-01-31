@@ -20,11 +20,11 @@ export function AlbumSearch() {
   const containerRef = useRef<HTMLDivElement>(null);
   const listboxId = "album-search-results";
   
-  const { selectedFolderId, addAlbumToFolder, folders } = useFolderStore();
+  const { selectedFolderId, addAlbumToFolder, removeAlbumFromFolder, folders } = useFolderStore();
   
   // Get albums in selected folder
   const albumsInSelectedFolder = useMemo(() => {
-    if (!selectedFolderId) return new Set<string>();
+    if (!selectedFolderId) return new Map<string, string[]>();
     
     const findFolder = (folderList: Folder[]): Folder | null => {
       for (const folder of folderList) {
@@ -36,9 +36,16 @@ export function AlbumSearch() {
     };
     
     const folder = findFolder(folders);
-    if (!folder) return new Set<string>();
+    if (!folder) return new Map<string, string[]>();
     
-    return new Set(folder.albums.map(a => `${a.name}-${a.artist}`));
+    const albumMap = new Map<string, string[]>();
+    folder.albums.forEach(album => {
+      const key = `${album.name}-${album.artist}`.toLowerCase();
+      const existing = albumMap.get(key) || [];
+      albumMap.set(key, [...existing, album.id]);
+    });
+
+    return albumMap;
   }, [selectedFolderId, folders]);
 
   // Reset active index when results change
@@ -134,7 +141,15 @@ export function AlbumSearch() {
       return;
     }
 
-    addAlbumToFolder(selectedFolderId, album);
+    const key = `${album.name}-${album.artist}`.toLowerCase();
+    const existingIds = albumsInSelectedFolder.get(key);
+
+    if (existingIds && existingIds.length > 0) {
+      // Remove all matching albums
+      existingIds.forEach(id => removeAlbumFromFolder(selectedFolderId, id));
+    } else {
+      addAlbumToFolder(selectedFolderId, album);
+    }
   };
 
   return (
@@ -177,7 +192,7 @@ export function AlbumSearch() {
                 )}
 
                 {results.map((album, index) => {
-                  const isAdded = albumsInSelectedFolder.has(`${album.name}-${album.artist}`);
+                  const isAdded = albumsInSelectedFolder.has(`${album.name}-${album.artist}`.toLowerCase());
                   const isActive = index === activeIndex;
                   
                   return (
