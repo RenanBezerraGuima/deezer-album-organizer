@@ -4,7 +4,7 @@ export interface Album {
   name: string;
   artist: string;
   imageUrl: string;
-  releaseDate: string;
+  releaseDate?: string;
   totalTracks: number;
   spotifyUrl?: string;
   externalUrl?: string;
