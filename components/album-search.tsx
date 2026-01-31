@@ -7,7 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useFolderStore } from '@/lib/store';
 import type { Album, Folder } from '@/lib/types';
 import { useDebounce } from '@/hooks/use-debounce';
-import { searchAlbumsITunes } from '@/lib/search-service';
+import { searchAlbumsDeezer } from '@/lib/search-service';
 import { cn } from '@/lib/utils';
 
 export function AlbumSearch() {
@@ -86,7 +86,7 @@ export function AlbumSearch() {
     setError(null);
 
     try {
-      const data = await searchAlbumsITunes(searchQuery);
+      const data = await searchAlbumsDeezer(searchQuery);
       setResults(data);
       setIsOpen(true);
     } catch (err) {
@@ -221,7 +221,8 @@ export function AlbumSearch() {
                           {album.name}
                         </p>
                         <p className="text-xs text-muted-foreground truncate">
-                          {album.artist} • {album.releaseDate?.slice(0, 4)}
+                          {album.artist}
+                          {album.releaseDate && ` • ${album.releaseDate.slice(0, 4)}`}
                         </p>
                       </div>
                       {isAdded && (

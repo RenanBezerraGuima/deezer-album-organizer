@@ -40,11 +40,15 @@ export const AlbumCard = React.memo(function AlbumCard({ album, folderId }: Albu
   };
 
   const handleOpenDeezer = () => {
-    const searchQuery = `${album.name} ${album.artist}`;
-    window.open(
-      `https://www.deezer.com/search/${encodeURIComponent(searchQuery)}`,
-      '_blank'
-    );
+    if (album.externalUrl) {
+      window.open(album.externalUrl, '_blank');
+    } else {
+      const searchQuery = `${album.name} ${album.artist}`;
+      window.open(
+        `https://www.deezer.com/search/${encodeURIComponent(searchQuery)}`,
+        '_blank'
+      );
+    }
   };
 
   return (
@@ -106,8 +110,12 @@ export const AlbumCard = React.memo(function AlbumCard({ album, folderId }: Albu
           {album.artist}
         </p>
         <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
-          <span>{album.releaseDate?.split('-')[0]}</span>
-          <span>-</span>
+          {album.releaseDate && (
+            <>
+              <span>{album.releaseDate.split('-')[0]}</span>
+              <span>-</span>
+            </>
+          )}
           <span>{album.totalTracks} tracks</span>
         </div>
       </div>
