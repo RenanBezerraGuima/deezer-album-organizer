@@ -13,12 +13,14 @@ interface AlbumCardProps {
   folderId: string;
 }
 
-export function AlbumCard({ album, folderId }: AlbumCardProps) {
+export const AlbumCard = React.memo(function AlbumCard({ album, folderId }: AlbumCardProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [deezerUrl, setDeezerUrl] = useState<string | null>(null);
   const [isLoadingDeezer, setIsLoadingDeezer] = useState(false);
 
-  const { setDraggedAlbum, setDraggedFolderId, removeAlbumFromFolder } = useFolderStore();
+  const setDraggedAlbum = useFolderStore(state => state.setDraggedAlbum);
+  const setDraggedFolderId = useFolderStore(state => state.setDraggedFolderId);
+  const removeAlbumFromFolder = useFolderStore(state => state.removeAlbumFromFolder);
 
   const handleDragStart = (e: React.DragEvent) => {
     setIsDragging(true);
@@ -111,4 +113,4 @@ export function AlbumCard({ album, folderId }: AlbumCardProps) {
       </div>
     </div>
   );
-}
+});
