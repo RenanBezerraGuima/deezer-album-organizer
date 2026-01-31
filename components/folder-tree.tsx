@@ -32,29 +32,26 @@ interface FolderItemProps {
   parentId: string | null;
 }
 
-function FolderItem({ folder, depth, parentId }: FolderItemProps) {
+const FolderItem = React.memo(function FolderItem({ folder, depth, parentId }: FolderItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(folder.name);
   const [isDragOver, setIsDragOver] = useState(false);
   const [dropPosition, setDropPosition] = useState<'before' | 'inside' | 'after' | null>(null);
 
-  const {
-    selectedFolderId,
-    setSelectedFolder,
-    toggleFolderExpanded,
-    renameFolder,
-    deleteFolder,
-    draggedAlbum,
-    draggedFolderId,
-    draggedFolder,
-    moveAlbum,
-    moveFolder,
-    setDraggedAlbum,
-    setDraggedFolderId,
-    setDraggedFolder,
-  } = useFolderStore();
+  const isSelected = useFolderStore(state => state.selectedFolderId === folder.id);
+  const setSelectedFolder = useFolderStore(state => state.setSelectedFolder);
+  const toggleFolderExpanded = useFolderStore(state => state.toggleFolderExpanded);
+  const renameFolder = useFolderStore(state => state.renameFolder);
+  const deleteFolder = useFolderStore(state => state.deleteFolder);
+  const draggedAlbum = useFolderStore(state => state.draggedAlbum);
+  const draggedFolderId = useFolderStore(state => state.draggedFolderId);
+  const draggedFolder = useFolderStore(state => state.draggedFolder);
+  const moveAlbum = useFolderStore(state => state.moveAlbum);
+  const moveFolder = useFolderStore(state => state.moveFolder);
+  const setDraggedAlbum = useFolderStore(state => state.setDraggedAlbum);
+  const setDraggedFolderId = useFolderStore(state => state.setDraggedFolderId);
+  const setDraggedFolder = useFolderStore(state => state.setDraggedFolder);
 
-  const isSelected = selectedFolderId === folder.id;
   const hasSubfolders = folder.subfolders.length > 0;
 
   const handleClick = () => {
@@ -279,14 +276,18 @@ function FolderItem({ folder, depth, parentId }: FolderItemProps) {
       )}
     </div>
   );
-}
+});
 
 export function FolderTree() {
   const [isCreating, setIsCreating] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
   const [isDragOver, setIsDragOver] = useState(false);
 
-  const { folders, selectedFolderId, createFolder, draggedFolder, moveFolder, setDraggedFolder } = useFolderStore();
+  const folders = useFolderStore(state => state.folders);
+  const createFolder = useFolderStore(state => state.createFolder);
+  const draggedFolder = useFolderStore(state => state.draggedFolder);
+  const moveFolder = useFolderStore(state => state.moveFolder);
+  const setDraggedFolder = useFolderStore(state => state.setDraggedFolder);
 
   const handleCreateFolder = () => {
     if (newFolderName.trim()) {

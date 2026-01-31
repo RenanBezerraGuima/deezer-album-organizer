@@ -39,7 +39,10 @@ function getBreadcrumb(folders: Folder[], targetId: string): string[] {
 }
 
 export function AlbumGrid() {
-  const { folders, selectedFolderId, reorderAlbum } = useFolderStore();
+  const folders = useFolderStore(state => state.folders);
+  const selectedFolderId = useFolderStore(state => state.selectedFolderId);
+  const reorderAlbum = useFolderStore(state => state.reorderAlbum);
+
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dropIndex, setDropIndex] = useState<number | null>(null);
 
