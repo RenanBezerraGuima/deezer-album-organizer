@@ -38,7 +38,7 @@ export const AlbumCard = React.memo(function AlbumCard({ album, folderId }: Albu
   return (
     <div
       className={cn(
-        'group relative bg-card rounded-lg overflow-hidden border border-border shadow-sm transition-all hover:shadow-md hover:border-muted-foreground/30'
+        'group relative glass rounded-xl overflow-hidden border border-border shadow-sm transition-all duration-300 hover:scale-[1.02] hover:glow-primary hover:border-primary/50'
       )}
     >
       <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing z-10">
@@ -70,12 +70,12 @@ export const AlbumCard = React.memo(function AlbumCard({ album, folderId }: Albu
           onClick={handleOpenDeezer}
           disabled={isLoadingDeezer}
           aria-label="Open on Deezer"
-          className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+          className="absolute inset-0 flex items-center justify-center bg-background/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer"
         >
           {isLoadingDeezer ? (
             <Loader2 className="h-12 w-12 text-white animate-spin" />
           ) : (
-            <div className="bg-[#A238FF] rounded-full p-3 shadow-lg hover:scale-110 transition-transform">
+            <div className="bg-gradient-to-br from-primary to-accent rounded-full p-4 shadow-xl hover:scale-110 transition-transform duration-300">
               <Play className="h-8 w-8 text-white fill-white" />
             </div>
           )}
