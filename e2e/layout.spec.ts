@@ -16,7 +16,7 @@ test('headers should be aligned', async ({ page }) => {
   await page.click('text=Test Folder');
 
   // Use more specific selectors
-  const folderTreeHeader = page.locator('div:has(> h2:text("Folders"))').first();
+  const folderTreeHeader = page.locator('div:has(> h2:text("Collections"))').first();
   const albumGridHeader = page.locator('div:has(> p:text-matches("album"))').first();
 
   const folderTreeBox = await folderTreeHeader.boundingBox();

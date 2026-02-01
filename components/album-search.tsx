@@ -152,17 +152,17 @@ export function AlbumSearch() {
   };
 
   return (
-    <div className="w-full flex justify-center px-4 py-3 border-b border-border bg-background">
+    <div className="w-full flex justify-center px-4 py-6 border-b border-border/50 glass z-50">
       <div className="w-full max-w-2xl relative" ref={containerRef}>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="relative group">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
             placeholder="Search albums..."
             value={query}
             onChange={handleSearchChange}
             onFocus={handleFocus}
             onKeyDown={handleKeyDown}
-            className="pl-9 w-full"
+            className="pl-12 h-12 w-full rounded-2xl glass border-border/50 focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-lg"
             maxLength={200}
             aria-label="Search albums"
             aria-expanded={isOpen}
@@ -183,8 +183,8 @@ export function AlbumSearch() {
         )}
 
         {isOpen && (results.length > 0 || error) && (
-          <div className="absolute left-0 right-0 top-full mt-2 z-50 bg-background border border-border rounded-lg shadow-lg overflow-hidden">
-            <ScrollArea className="h-[384px]">
+          <div className="absolute left-0 right-0 top-full mt-4 z-50 glass border border-border/50 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <ScrollArea className="h-[400px]">
               <div className="p-2 space-y-1" role="listbox" id={listboxId}>
                 {error && (
                   <p className="text-sm text-destructive text-center py-2">{error}</p>
@@ -202,12 +202,12 @@ export function AlbumSearch() {
                       role="option"
                       aria-selected={isActive}
                       className={cn(
-                        "flex items-center gap-3 p-2 rounded-lg transition-colors",
+                        "flex items-center gap-4 p-3 rounded-xl transition-all duration-200 mx-1",
                         selectedFolderId 
-                          ? "cursor-pointer hover:bg-secondary active:bg-secondary/80" 
+                          ? "cursor-pointer hover:bg-primary/10 active:scale-[0.98]"
                           : "opacity-60 cursor-not-allowed",
-                        isAdded && "bg-green-500/10",
-                        isActive && "bg-accent text-accent-foreground"
+                        isAdded && "bg-accent/10",
+                        isActive && "bg-primary/20 ring-1 ring-primary/30"
                       )}
                     >
                       <img

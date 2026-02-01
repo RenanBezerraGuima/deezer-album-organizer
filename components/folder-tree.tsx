@@ -14,6 +14,7 @@ import {
   GripVertical,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -174,8 +175,10 @@ const FolderItem = React.memo(function FolderItem({ folder, depth, parentId }: F
         <ContextMenuTrigger asChild>
           <div
             className={cn(
-              'group flex items-center gap-1 px-2 py-1.5 rounded-md cursor-pointer transition-colors',
-          isSelected ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50',
+              'group flex items-center gap-2 px-3 py-2 rounded-xl cursor-pointer transition-all duration-200',
+          isSelected
+            ? 'bg-gradient-to-r from-primary/20 to-accent/20 text-foreground ring-1 ring-primary/30 shadow-sm'
+            : 'hover:bg-accent/30',
           isDragOver && dropPosition === 'inside' && 'bg-primary/20 ring-2 ring-primary',
           isDragOver && dropPosition === 'before' && 'border-t-2 border-primary',
           isDragOver && dropPosition === 'after' && 'border-b-2 border-primary'
@@ -206,9 +209,9 @@ const FolderItem = React.memo(function FolderItem({ folder, depth, parentId }: F
         </button>
 
         {folder.isExpanded ? (
-          <FolderOpen className="h-4 w-4 text-amber-500 shrink-0" />
+          <FolderOpen className="h-4 w-4 text-accent shrink-0" />
         ) : (
-          <Folder className="h-4 w-4 text-amber-500 shrink-0" />
+          <Folder className="h-4 w-4 text-accent shrink-0" />
         )}
 
         {isEditing ? (
@@ -340,7 +343,7 @@ const FolderItem = React.memo(function FolderItem({ folder, depth, parentId }: F
               className="flex items-center gap-1 px-2 py-1.5"
               style={{ paddingLeft: `${(depth + 1) * 16 + 8}px` }}
             >
-              <Folder className="h-4 w-4 text-amber-500 shrink-0" />
+              <Folder className="h-4 w-4 text-accent shrink-0" />
               <Input
                 value={newSubfolderName}
                 onChange={(e) => setNewSubfolderName(e.target.value)}
@@ -422,18 +425,21 @@ export function FolderTree() {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="h-[73px] p-4 border-b border-border flex items-center justify-between shrink-0">
-        <h2 className="text-lg font-semibold text-foreground">Folders</h2>
-        <Button
-          size="icon"
-          variant="ghost"
-          onClick={() => setIsCreating(true)}
-          title="Create folder"
-          aria-label="Create folder"
-        >
-          <FolderPlus className="h-4 w-4" />
-        </Button>
+    <div className="flex flex-col h-full glass">
+      <div className="h-[73px] p-4 border-b border-border/50 flex items-center justify-between shrink-0">
+        <h2 className="text-lg font-bold text-gradient">Collections</h2>
+        <div className="flex items-center gap-1">
+          <ThemeToggle />
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={() => setIsCreating(true)}
+            title="Create folder"
+            aria-label="Create folder"
+          >
+            <FolderPlus className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
       <ScrollArea className="flex-1 min-h-0">
@@ -448,7 +454,7 @@ export function FolderTree() {
         >
           {isCreating && (
             <div className="flex items-center gap-1 px-2 py-1.5 mb-2">
-              <Folder className="h-4 w-4 text-amber-500 shrink-0 ml-5" />
+              <Folder className="h-4 w-4 text-accent shrink-0 ml-5" />
               <Input
                 value={newFolderName}
                 onChange={(e) => setNewFolderName(e.target.value)}

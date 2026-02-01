@@ -5,7 +5,7 @@ test('should require password to access the app', async ({ page }) => {
 
   // Should see a password input and no folder tree
   await expect(page.locator('input[type="password"]')).toBeVisible();
-  await expect(page.locator('text=Folders')).not.toBeVisible();
+  await expect(page.locator('text=Collections')).not.toBeVisible();
 
   // Enter wrong password
   await page.fill('input[type="password"]', 'wrong-password');
@@ -20,5 +20,5 @@ test('should require password to access the app', async ({ page }) => {
   await page.click('button:has-text("Login"), button:has-text("Enter")');
 
   // Should see the app now
-  await expect(page.locator('h2:has-text("Folders")')).toBeVisible({ timeout: 10000 });
+  await expect(page.locator('h2:has-text("Collections")')).toBeVisible({ timeout: 10000 });
 });
