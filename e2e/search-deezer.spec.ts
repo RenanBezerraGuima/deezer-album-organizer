@@ -1,7 +1,11 @@
 import { test, expect } from '@playwright/test';
 
 test('verify Deezer search finds specific missing albums', async ({ page }) => {
-  await page.goto('./');
+  await page.goto('/');
+
+  // Login
+  await page.fill('input[type="password"]', '8$cbfkFu%N$nx9!zPcg^');
+  await page.click('button:has-text("Enter")');
 
   // Create a folder to enable search
   await page.click('button[title="Create folder"]');
