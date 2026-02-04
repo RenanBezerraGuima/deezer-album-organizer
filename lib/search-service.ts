@@ -13,7 +13,7 @@ function jsonp<T>(url: string): Promise<T> {
       resolve(data);
     };
 
-    script.src = `${url}${url.indexOf('?') >= 0 ? '&' : '?'}output=jsonp&callback=${callbackName}`;
+    script.src = `${url}${url.indexOf('?') >= 0 ? '&' : '?'}callback=${callbackName}`;
     script.onerror = () => {
       delete (window as any)[callbackName];
       document.body.removeChild(script);
@@ -28,7 +28,7 @@ export async function searchAlbumsDeezer(query: string): Promise<Album[]> {
 
   try {
     const data = await jsonp<any>(
-      `https://api.deezer.com/search/album?q=${encodeURIComponent(query)}&limit=20`
+      `https://api.deezer.com/search/album?q=${encodeURIComponent(query)}&limit=20&output=jsonp`
     );
 
     if (data.error) {
