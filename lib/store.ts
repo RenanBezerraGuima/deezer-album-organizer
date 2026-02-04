@@ -38,7 +38,7 @@ interface FolderStore {
   setHasSetPreference: (hasSet: boolean) => void;
 }
 
-const generateId = () => Math.random().toString(36).substring(2, 15);
+const generateId = () => crypto.randomUUID();
 
 export const findFolder = (folders: Folder[], id: string): Folder | null => {
   for (const folder of folders) {
@@ -380,19 +380,34 @@ export const useFolderStore = create<FolderStore>()(
       importFolders: (importedFolders) => {
         const state = get();
 
-        const regenerateIds = (folders: Folder[], parentId: string | null): Folder[] => {
+        const sanitizeAndRegenerate = (folders: any[], parentId: string | null): Folder[] => {
           return folders.map((folder) => {
             const newId = generateId();
+
+            // Sanitize albums
+            const sanitizedAlbums: Album[] = (folder.albums || []).map((album: any) => ({
+              id: String(album.id || generateId()),
+              name: String(album.name || '').slice(0, 200),
+              artist: String(album.artist || '').slice(0, 200),
+              imageUrl: String(album.imageUrl || ''),
+              releaseDate: album.releaseDate ? String(album.releaseDate) : undefined,
+              totalTracks: Number(album.totalTracks) || 0,
+              spotifyId: album.spotifyId ? String(album.spotifyId) : undefined,
+              externalUrl: album.externalUrl ? String(album.externalUrl) : undefined,
+            }));
+
             return {
-              ...folder,
               id: newId,
+              name: String(folder.name || 'Untitled').slice(0, 100),
               parentId,
-              subfolders: regenerateIds(folder.subfolders, newId),
+              albums: sanitizedAlbums,
+              subfolders: sanitizeAndRegenerate(folder.subfolders || [], newId),
+              isExpanded: Boolean(folder.isExpanded),
             };
           });
         };
 
-        const processedImported = regenerateIds(importedFolders, null);
+        const processedImported = sanitizeAndRegenerate(importedFolders, null);
         const existingFolders = [...state.folders];
 
         const existingNames = new Set(existingFolders.map(f => f.name));
