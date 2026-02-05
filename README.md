@@ -44,6 +44,7 @@ To enable Spotify search, you need to provide a Spotify Client ID:
    NEXT_PUBLIC_SPOTIFY_CLIENT_ID=your_client_id_here
    ```
 5. For GitHub Pages deployment, add a Repository Variable named `NEXT_PUBLIC_SPOTIFY_CLIENT_ID` with your client ID.
+   *(Note: The application uses the PKCE flow, so you do not need to enable "Implicit Grant" in the Spotify Dashboard.)*
 
 ## Deployment
 This project is designed to be hosted as a static site on GitHub Pages.
