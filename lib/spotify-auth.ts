@@ -4,6 +4,10 @@ export const SPOTIFY_SEARCH_ENDPOINT = "https://api.spotify.com/v1/search";
 export const getSpotifyAuthUrl = () => {
   const clientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID || 'YOUR_SPOTIFY_CLIENT_ID';
 
+  if (clientId === 'YOUR_SPOTIFY_CLIENT_ID') {
+    console.warn('Spotify Client ID is not configured. Please set NEXT_PUBLIC_SPOTIFY_CLIENT_ID environment variable.');
+  }
+
   // Get the current origin and base path to construct the redirect URI
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
   // Use the same logic as in next.config.mjs or a default
