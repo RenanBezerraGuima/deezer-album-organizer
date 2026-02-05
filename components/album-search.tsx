@@ -116,7 +116,7 @@ export function AlbumSearch() {
     } finally {
       setIsLoading(false);
     }
-  }, [streamingProvider]);
+  }, [streamingProvider, isSpotifyTokenExpired, spotifyToken]);
 
   const debouncedSearch = useDebounce(searchAlbums, 150);
 
