@@ -9,7 +9,7 @@ import { AlbumCard } from './album-card';
 import type { Album } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
-export function AlbumGrid() {
+export function AlbumGrid({ isMobile }: { isMobile?: boolean }) {
   // Use granular selectors to avoid re-renders when unrelated parts of the store change
   const selectedFolderId = useFolderStore(state => state.selectedFolderId);
   const selectedFolder = useFolderStore(useCallback(state =>
@@ -74,8 +74,14 @@ export function AlbumGrid() {
 
   return (
     <div className="flex flex-col h-full bg-background">
-      <div className="h-[73px] p-4 border-b-2 border-border shrink-0 flex flex-col justify-center bg-background">
-        <div className="flex items-center gap-2 text-[10px] uppercase tracking-tighter opacity-70 mb-1" style={{ fontFamily: 'var(--font-mono)' }}>
+      <div className={cn(
+        "h-[73px] border-b-2 border-border shrink-0 flex flex-col justify-center bg-background",
+        isMobile ? "p-3" : "p-4"
+      )}>
+        <div className={cn(
+          "flex items-center gap-2 uppercase tracking-tighter opacity-70 mb-1",
+          isMobile ? "text-[9px]" : "text-[10px]"
+        )} style={{ fontFamily: 'var(--font-mono)' }}>
           {breadcrumb.map((name, index) => (
             <span key={index} className="flex items-center gap-2">
               {index > 0 && <span>/</span>}
@@ -98,7 +104,10 @@ export function AlbumGrid() {
             <p className="text-[10px] mt-1" style={{ fontFamily: 'var(--font-mono)' }}>Add albums via search interface</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 p-4">
+          <div className={cn(
+            "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6",
+            isMobile ? "gap-2 p-2" : "gap-4 p-4"
+          )}>
             {selectedFolder.albums.map((album, index) => (
               <div
                 key={album.id}

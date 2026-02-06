@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { Search, Loader2, Check, X } from 'lucide-react';
+import { Search, Loader2, Check, X, Menu } from 'lucide-react';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useFolderStore, findFolder } from '@/lib/store';
@@ -12,7 +13,12 @@ import { searchAlbumsDeezer, searchAlbumsApple, searchAlbumsSpotify } from '@/li
 import { cn } from '@/lib/utils';
 import { redirectToSpotifyAuth } from '@/lib/spotify-auth';
 
-export function AlbumSearch() {
+interface AlbumSearchProps {
+  isMobile?: boolean;
+  onMenuClick?: () => void;
+}
+
+export function AlbumSearch({ isMobile, onMenuClick }: AlbumSearchProps) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Album[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -180,17 +186,34 @@ export function AlbumSearch() {
   };
 
   return (
-    <div className="w-full flex justify-center px-4 py-6 border-b-2 border-border bg-background z-50">
-      <div className="w-full max-w-2xl relative" ref={containerRef}>
-        <div className="relative group">
+    <div className={cn(
+      "w-full flex justify-center border-b-2 border-border bg-background z-50",
+      isMobile ? "px-2 py-4" : "px-4 py-6"
+    )}>
+      <div className="w-full max-w-2xl flex items-center gap-2 relative" ref={containerRef}>
+        {isMobile && onMenuClick && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onMenuClick}
+            className="shrink-0 h-12 w-12"
+            aria-label="Open menu"
+          >
+            <Menu className="h-6 w-6" />
+          </Button>
+        )}
+        <div className="relative group flex-1">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
-            placeholder={`SEARCH ALBUMS ON ${streamingProvider.toUpperCase()}...`}
+            placeholder={isMobile ? "SEARCH..." : `SEARCH ALBUMS ON ${streamingProvider.toUpperCase()}...`}
             value={query}
             onChange={handleSearchChange}
             onFocus={handleFocus}
             onKeyDown={handleKeyDown}
-            className="pl-12 pr-10 h-12 w-full bg-background border-2 border-border focus:ring-0 focus:border-primary focus:brutalist-shadow transition-all text-lg uppercase tracking-tighter"
+            className={cn(
+              "pl-12 pr-10 h-12 w-full bg-background border-2 border-border focus:ring-0 focus:border-primary focus:brutalist-shadow transition-all uppercase tracking-tighter",
+              isMobile ? "text-base" : "text-lg"
+            )}
             style={{ borderRadius: 'var(--radius)', fontFamily: 'var(--font-mono)' }}
             maxLength={200}
             aria-label="Search albums"
