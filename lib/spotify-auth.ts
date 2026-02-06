@@ -3,13 +3,12 @@ export const SPOTIFY_TOKEN_ENDPOINT = "https://accounts.spotify.com/api/token";
 export const SPOTIFY_SEARCH_ENDPOINT = "https://api.spotify.com/v1/search";
 
 function generateRandomString(length: number) {
-  let text = '';
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-  for (let i = 0; i < length; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
+  const values = new Uint32Array(length);
+  crypto.getRandomValues(values);
+  return Array.from(values)
+    .map((x) => possible[x % possible.length])
+    .join('');
 }
 
 async function generateCodeChallenge(codeVerifier: string) {
@@ -40,8 +39,10 @@ export const redirectToSpotifyAuth = async () => {
 
   const verifier = generateRandomString(128);
   const challenge = await generateCodeChallenge(verifier);
+  const state = generateRandomString(16);
 
   localStorage.setItem('spotify_code_verifier', verifier);
+  localStorage.setItem('spotify_auth_state', state);
 
   const params = new URLSearchParams({
     client_id: clientId,
@@ -49,6 +50,7 @@ export const redirectToSpotifyAuth = async () => {
     redirect_uri: redirectUri,
     code_challenge_method: 'S256',
     code_challenge: challenge,
+    state: state,
     show_dialog: 'true',
   });
 
@@ -106,10 +108,14 @@ export const getSpotifyAuthUrl = () => {
     redirectUri += '/';
   }
 
+  const state = generateRandomString(16);
+  localStorage.setItem('spotify_auth_state', state);
+
   const params = new URLSearchParams({
     client_id: clientId,
     redirect_uri: redirectUri,
     response_type: 'token',
+    state: state,
     show_dialog: 'true',
     // We don't strictly need scopes for general album search,
     // but some metadata might be richer with a token.
@@ -124,12 +130,14 @@ export const parseSpotifyHash = (hash: string) => {
   const params = new URLSearchParams(hash.substring(1));
   const accessToken = params.get('access_token');
   const expiresIn = params.get('expires_in');
+  const state = params.get('state');
 
   if (!accessToken) return null;
 
   return {
     accessToken,
     expiresIn: expiresIn ? parseInt(expiresIn, 10) : 3600,
-    timestamp: Date.now()
+    timestamp: Date.now(),
+    state
   };
 };

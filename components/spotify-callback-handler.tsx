@@ -18,6 +18,16 @@ export function SpotifyCallbackHandler() {
         const authData = parseSpotifyHash(hash);
 
         if (authData) {
+          const storedState = localStorage.getItem('spotify_auth_state');
+          localStorage.removeItem('spotify_auth_state');
+
+          if (!authData.state || authData.state !== storedState) {
+            console.error('Spotify Auth State Mismatch');
+            toast.error('SPOTIFY AUTH SECURITY ERROR');
+            window.history.replaceState(null, document.title, window.location.pathname);
+            return;
+          }
+
           setSpotifyToken(authData.accessToken, authData.expiresIn, authData.timestamp);
           toast.success('CONNECTED TO SPOTIFY');
 
@@ -34,9 +44,11 @@ export function SpotifyCallbackHandler() {
       // 2. Handle PKCE (Search Params)
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
+      const state = urlParams.get('state');
       const error = urlParams.get('error');
 
       if (error) {
+        localStorage.removeItem('spotify_auth_state');
         console.error('Spotify Auth Error:', error);
         toast.error(`SPOTIFY AUTH FAILED: ${error.toUpperCase()}`);
 
@@ -50,6 +62,16 @@ export function SpotifyCallbackHandler() {
       }
 
       if (code) {
+        const storedState = localStorage.getItem('spotify_auth_state');
+        localStorage.removeItem('spotify_auth_state');
+
+        if (!state || state !== storedState) {
+          console.error('Spotify Auth State Mismatch');
+          toast.error('SPOTIFY AUTH SECURITY ERROR');
+          window.history.replaceState(null, document.title, window.location.pathname);
+          return;
+        }
+
         try {
           const data = await exchangeCodeForToken(code);
           if (data.access_token) {
