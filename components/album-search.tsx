@@ -133,7 +133,7 @@ export function AlbumSearch({ isMobile, onMenuClick }: AlbumSearchProps) {
   };
 
   const handleFocus = () => {
-    if (results.length > 0 || error) {
+    if (results.length > 0 || error || (query.trim() && !isLoading)) {
       setIsOpen(true);
     }
   };
@@ -245,12 +245,20 @@ export function AlbumSearch({ isMobile, onMenuClick }: AlbumSearchProps) {
           </p>
         )}
 
-        {isOpen && (results.length > 0 || error) && (
+        {isOpen && (results.length > 0 || error || (query.trim() && !isLoading)) && (
           <div className="absolute left-0 right-0 top-full mt-2 z-50 glass border-2 border-border brutalist-shadow overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200" style={{ borderRadius: 'var(--radius)' }}>
             <ScrollArea className="h-[400px]">
-              <div className="p-2 space-y-1" role="listbox" id={listboxId}>
+              <div className="p-2 space-y-1">
+                {results.length === 0 && !isLoading && query.trim() && !error && (
+                  <div className="py-12 px-4 text-center" aria-live="polite">
+                    <p className="text-sm text-muted-foreground uppercase font-mono tracking-tighter">
+                      No albums found for "{query}"
+                    </p>
+                  </div>
+                )}
+
                 {error && (
-                  <div className="py-6 px-4 text-center space-y-4">
+                  <div className="py-6 px-4 text-center space-y-4" aria-live="assertive">
                     <p className="text-sm text-destructive uppercase" style={{ fontFamily: 'var(--font-mono)' }}>{error}</p>
                     {streamingProvider === 'spotify' && isSpotifyTokenExpired && (
                       <button
@@ -263,7 +271,8 @@ export function AlbumSearch({ isMobile, onMenuClick }: AlbumSearchProps) {
                   </div>
                 )}
 
-                {results.map((album, index) => {
+                <div role="listbox" id={listboxId} className="space-y-1">
+                  {results.map((album, index) => {
                   const isAdded = albumsInSelectedFolder.has(`${album.name}-${album.artist}`.toLowerCase());
                   const isActive = index === activeIndex;
                   
@@ -311,6 +320,7 @@ export function AlbumSearch({ isMobile, onMenuClick }: AlbumSearchProps) {
                     </div>
                   );
                 })}
+                </div>
               </div>
             </ScrollArea>
           </div>

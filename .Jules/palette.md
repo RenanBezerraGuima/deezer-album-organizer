@@ -13,3 +13,7 @@
 ## 2025-05-20 - [Native Tooltips for Icon-Only Buttons]
 **Learning:** While ARIA labels are essential for screen readers, sighted users often benefit from the immediate visual context provided by hover tooltips. Using the native `title` attribute in conjunction with `aria-label` provides a lightweight, dependency-free way to improve discovery for icon-only interactive elements.
 **Action:** Consistently apply both `aria-label` and a matching `title` attribute to all icon-only buttons to ensure they are both accessible and intuitive.
+
+## 2025-05-21 - [Search Empty States and ARIA Roles]
+**Learning:** Providing immediate feedback when a search returns no results is crucial for user confidence. However, mixing status messages with selectable options in a `role="listbox"` violates ARIA standards.
+**Action:** Separate status messages (No results, Errors) from the actual results list. Use `aria-live` for status messages and only apply `role="listbox"` to the container of selectable options to maintain screen reader compatibility.
