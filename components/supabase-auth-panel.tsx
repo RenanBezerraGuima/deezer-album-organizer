@@ -39,8 +39,8 @@ export function SupabaseAuthPanel() {
   const [needsConflictResolution, setNeedsConflictResolution] = useState(false);
   const [hasLoadedRemote, setHasLoadedRemote] = useState(false);
   const syncTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasRequestedRemote = useRef(false);
 
-  const localSyncState = useFolderStore(selectSyncState);
   const isConfigured = isSupabaseConfigured;
 
   useEffect(() => {
@@ -53,6 +53,8 @@ export function SupabaseAuthPanel() {
   useEffect(() => {
     if (!session || !isConfigured) return;
     if (hasLoadedRemote) return;
+    if (hasRequestedRemote.current) return;
+    hasRequestedRemote.current = true;
 
     const loadRemote = async () => {
       try {
@@ -142,6 +144,7 @@ export function SupabaseAuthPanel() {
       setHasLoadedRemote(false);
       setNeedsConflictResolution(false);
       setRemoteSnapshot(null);
+      hasRequestedRemote.current = false;
     } catch (error) {
       console.error(error);
       toast.error('Failed to sign out.');
@@ -154,7 +157,8 @@ export function SupabaseAuthPanel() {
     if (!session) return;
     setIsBusy(true);
     try {
-      await upsertUserLibrary(session.user.id, localSyncState);
+      const currentLocalSyncState = selectSyncState(useFolderStore.getState());
+      await upsertUserLibrary(session.user.id, currentLocalSyncState);
       setNeedsConflictResolution(false);
       toast.success('Uploaded to cloud.');
     } catch (error) {
