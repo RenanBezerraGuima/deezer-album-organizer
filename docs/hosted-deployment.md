@@ -15,7 +15,10 @@ Vercel supports Next.js out of the box and makes it easy to attach environment v
 1. Create a new Vercel project from this GitHub repository.
 2. In **Project Settings → Environment Variables**, do **not** set `NEXT_PUBLIC_BASE_PATH`  
    (leave it unset so Vercel deploys at `/`).
-3. For Spotify (if used), add:
+3. When connecting the Supabase integration in Vercel:
+   - Select **Development**, **Preview**, and **Production** environments.
+   - Leave the **Custom Prefix** blank (so the default Supabase env vars are created).
+4. For Spotify (if used), add:
    - `NEXT_PUBLIC_SPOTIFY_CLIENT_ID`
 
 > ✅ Keep GitHub Pages: do **not** remove your existing GitHub Actions deployment; this Vercel deploy is a second target.
@@ -31,6 +34,19 @@ Supabase provides a free Postgres database with a hosted REST/JS client. It’s 
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
+### Auth + policies
+Enable email/password auth in Supabase and add an RLS policy so each user only reads/writes their own data:
+
+```sql
+alter table public.albumshelf_items enable row level security;
+
+create policy "User can manage their library"
+on public.albumshelf_items
+for all
+using (auth.uid()::text = user_id)
+with check (auth.uid()::text = user_id);
+```
+
 ### Suggested schema
 Create a table called `albumshelf_items`:
 
@@ -43,11 +59,11 @@ Create a table called `albumshelf_items`:
 
 This keeps the initial integration simple: store the entire library JSON as a single record, then evolve later.
 
-## 3) Next step (implementation)
+## 3) App integration
 
-To actually sync data, you’ll add a small data layer that:
-1. Reads from Supabase on load.
-2. Writes to Supabase on save/export.
-3. Falls back to `localStorage` when offline.
+The app includes a **Cloud Account** panel (top bar) that lets you:
+1. Sign up / sign in with email + password.
+2. Pull data from Supabase.
+3. Push data to Supabase.
 
-If you want, I can implement the Supabase client and wire it to the existing data store while keeping the local-first behavior.
+Auto-sync is enabled after the first successful load, with local-first behavior preserved.
