@@ -467,6 +467,19 @@ export const useFolderStore = create<FolderStore>()(
     }),
     {
       name: 'album-shelf-storage',
+      // Exclude drag-and-drop state from persistence to avoid unnecessary
+      // localStorage writes and expensive serialization during drag operations.
+      partialize: (state) => {
+        const {
+          draggedAlbum,
+          draggedFolderId,
+          draggedAlbumIndex,
+          draggedFolder,
+          draggedFolderParentId,
+          ...persistedState
+        } = state;
+        return persistedState;
+      },
       storage: createJSONStorage(() => ({
         getItem: (name) => {
           const val = localStorage.getItem(name);
