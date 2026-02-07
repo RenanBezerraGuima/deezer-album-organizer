@@ -39,6 +39,7 @@ export function SupabaseAuthPanel() {
   const [needsConflictResolution, setNeedsConflictResolution] = useState(false);
   const [hasLoadedRemote, setHasLoadedRemote] = useState(false);
   const syncTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasRequestedRemote = useRef(false);
 
   const localSyncState = useFolderStore(selectSyncState);
   const isConfigured = isSupabaseConfigured;
@@ -53,21 +54,25 @@ export function SupabaseAuthPanel() {
   useEffect(() => {
     if (!session || !isConfigured) return;
     if (hasLoadedRemote) return;
+    if (hasRequestedRemote.current) return;
+    hasRequestedRemote.current = true;
 
     const loadRemote = async () => {
       try {
         const rows = await fetchUserLibrary(session.user.id);
         const remoteData = rows[0]?.data as SyncState | undefined;
+        const currentLocalSyncState = selectSyncState(useFolderStore.getState());
+
         if (remoteData) {
-          if (emptySyncState(localSyncState)) {
+          if (emptySyncState(currentLocalSyncState)) {
             applySyncState(remoteData);
             toast.success('Loaded your cloud library.');
           } else {
             setRemoteSnapshot(remoteData);
             setNeedsConflictResolution(true);
           }
-        } else if (!emptySyncState(localSyncState)) {
-          await upsertUserLibrary(session.user.id, localSyncState);
+        } else if (!emptySyncState(currentLocalSyncState)) {
+          await upsertUserLibrary(session.user.id, currentLocalSyncState);
           toast.success('Uploaded your local library.');
         }
       } catch (error) {
@@ -79,7 +84,7 @@ export function SupabaseAuthPanel() {
     };
 
     loadRemote();
-  }, [hasLoadedRemote, isConfigured, localSyncState, session]);
+  }, [hasLoadedRemote, isConfigured, session]);
 
   useEffect(() => {
     if (!session || !isConfigured || !hasLoadedRemote) return;
@@ -140,6 +145,7 @@ export function SupabaseAuthPanel() {
       setHasLoadedRemote(false);
       setNeedsConflictResolution(false);
       setRemoteSnapshot(null);
+      hasRequestedRemote.current = false;
     } catch (error) {
       console.error(error);
       toast.error('Failed to sign out.');
