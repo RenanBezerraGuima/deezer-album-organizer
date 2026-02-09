@@ -24,3 +24,8 @@
 **Vulnerability:** Inconsistent and missing input sanitization for Album data across search results and state management.
 **Learning:** Fragmented sanitization logic (e.g., sanitizing in the store but not in the search service) creates windows where unsanitized data is rendered in the UI. Early sanitization at the edge (API service) combined with defense-in-depth sanitization at the state level ensures safety.
 **Prevention:** Implement a centralized sanitization utility (e.g., `sanitizeAlbum`) that handles all fields (URLs and text) and apply it at every entry point where untrusted data is converted into application objects.
+
+## 2026-02-15 - [SVG-based XSS in Data URLs]
+**Vulnerability:** Allowing all `data:image/*` types in the sanitization layer included `image/svg+xml`, which can embed executable scripts.
+**Learning:** Even if images are primarily used in `<img>` tags (where scripts are blocked), allowing SVG data URLs provides an XSS vector if those URLs are ever used in other contexts (e.g., `background-image`, `window.open`, or if the user saves/opens the image).
+**Prevention:** Explicitly disallow `svg+xml` in the image sanitization layer if only bitmap images (JPG, PNG, WebP) are expected.

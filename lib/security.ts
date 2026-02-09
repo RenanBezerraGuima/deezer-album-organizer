@@ -42,8 +42,8 @@ export function sanitizeImageUrl(url: string | undefined): string | undefined {
   const trimmedUrl = url.trim();
 
   if (trimmedUrl.startsWith('data:')) {
-    // Only allow data:image/ protocols
-    if (trimmedUrl.startsWith('data:image/')) {
+    // Only allow safe data:image/ protocols (excluding SVG to prevent potential XSS)
+    if (trimmedUrl.startsWith('data:image/') && !trimmedUrl.startsWith('data:image/svg+xml')) {
       // Data URLs can be long, but let's still apply a reasonable limit for data images
       // usually 1MB is more than enough for small album covers if they are base64
       if (trimmedUrl.length > 1024 * 1024) return undefined;
@@ -61,7 +61,7 @@ export function sanitizeImageUrl(url: string | undefined): string | undefined {
  */
 export function sanitizeAlbum(album: any): Album {
   return {
-    id: String(album.id || ''),
+    id: String(album.id || '').slice(0, 100),
     spotifyId: album.spotifyId ? String(album.spotifyId).slice(0, 100) : undefined,
     name: String(album.name || 'Unknown Album').slice(0, MAX_TEXT_LENGTH),
     artist: String(album.artist || 'Unknown Artist').slice(0, MAX_TEXT_LENGTH),

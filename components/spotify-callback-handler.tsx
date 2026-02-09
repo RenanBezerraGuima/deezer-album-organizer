@@ -88,6 +88,9 @@ export function SpotifyCallbackHandler() {
         } catch (err) {
           console.error('Failed to exchange code:', err);
           toast.error('FAILED TO CONNECT TO SPOTIFY');
+        } finally {
+          // Clean up sensitive temporary data
+          localStorage.removeItem('spotify_code_verifier');
         }
       }
     };
