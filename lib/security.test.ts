@@ -133,13 +133,18 @@ describe('Security Utilities', () => {
       const longDataUrl = 'data:image/png;base64,' + 'A'.repeat(1024 * 1024 + 1);
       expect(sanitizeImageUrl(longDataUrl)).toBeUndefined();
     });
+
+    it('should reject SVG data URLs to prevent potential XSS', () => {
+      const svgDataUrl = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxzY3JpcHQ+YWxlcnQoMSk8L3NjcmlwdD48L3N2Zz4=';
+      expect(sanitizeImageUrl(svgDataUrl)).toBeUndefined();
+    });
   });
 
   describe('sanitizeAlbum', () => {
-    it('should truncate name and artist to 200 characters', () => {
+    it('should truncate id, name and artist to their respective limits', () => {
       const longText = 'A'.repeat(300);
       const album = {
-        id: '1',
+        id: longText,
         name: longText,
         artist: longText,
         imageUrl: 'https://example.com/image.jpg',
@@ -147,6 +152,7 @@ describe('Security Utilities', () => {
       };
 
       const sanitized = sanitizeAlbum(album);
+      expect(sanitized.id.length).toBe(100);
       expect(sanitized.name.length).toBe(200);
       expect(sanitized.artist.length).toBe(200);
     });
