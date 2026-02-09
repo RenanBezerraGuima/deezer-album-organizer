@@ -1,0 +1,3 @@
+Using local SQLite database
+Server starting on :3001
+2026/02/09 18:41:13 "GET http://localhost:3001/ HTTP/1.1" from [::1]:59692 - 303 33B in 62.638µs
