@@ -112,8 +112,13 @@ func main() {
 	fileServer := http.FileServer(http.Dir("./static"))
 	r.Handle("/static/*", http.StripPrefix("/static", fileServer))
 
-	fmt.Println("Server starting on :3000")
-	if err := http.ListenAndServe(":3000", r); err != nil {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
+
+	fmt.Printf("Server starting on :%s\n", port)
+	if err := http.ListenAndServe(":"+port, r); err != nil {
 		log.Fatal(err)
 	}
 }
