@@ -40,10 +40,12 @@ export function sanitizeImageUrl(url: string | undefined): string | undefined {
   if (!url || typeof url !== 'string') return undefined;
 
   const trimmedUrl = url.trim();
+  const lowerUrl = trimmedUrl.toLowerCase();
 
-  if (trimmedUrl.startsWith('data:')) {
+  if (lowerUrl.startsWith('data:')) {
     // Only allow safe data:image/ protocols (excluding SVG to prevent potential XSS)
-    if (trimmedUrl.startsWith('data:image/') && !trimmedUrl.startsWith('data:image/svg+xml')) {
+    // Using toLowerCase() to prevent case-sensitivity bypasses (e.g. data:image/SVG+XML)
+    if (lowerUrl.startsWith('data:image/') && !lowerUrl.startsWith('data:image/svg+xml')) {
       // Data URLs can be long, but let's still apply a reasonable limit for data images
       // usually 1MB is more than enough for small album covers if they are base64
       if (trimmedUrl.length > 1024 * 1024) return undefined;

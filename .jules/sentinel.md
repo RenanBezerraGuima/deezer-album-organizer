@@ -29,3 +29,8 @@
 **Vulnerability:** Allowing all `data:image/*` types in the sanitization layer included `image/svg+xml`, which can embed executable scripts.
 **Learning:** Even if images are primarily used in `<img>` tags (where scripts are blocked), allowing SVG data URLs provides an XSS vector if those URLs are ever used in other contexts (e.g., `background-image`, `window.open`, or if the user saves/opens the image).
 **Prevention:** Explicitly disallow `svg+xml` in the image sanitization layer if only bitmap images (JPG, PNG, WebP) are expected.
+
+## 2026-02-20 - [Case-Insensitive Bypass for Data URLs]
+**Vulnerability:** Case-sensitive string checks for `data:` protocol and `image/svg+xml` MIME type allowed bypasses via uppercase letters (e.g., `data:image/SVG+XML`).
+**Learning:** Security filters based on URL schemes or MIME types must be case-insensitive, as per RFC 2397 and standard browser behavior. Relying on `startsWith()` with a lowercase string is insufficient for security validation of untrusted input.
+**Prevention:** Always normalize untrusted URLs or MIME types to lowercase before performing prefix or inclusion checks, while ensuring the original payload is preserved if it is case-sensitive (like base64 data).

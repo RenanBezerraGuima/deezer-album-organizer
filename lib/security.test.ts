@@ -138,6 +138,16 @@ describe('Security Utilities', () => {
       const svgDataUrl = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxzY3JpcHQ+YWxlcnQoMSk8L3NjcmlwdD48L3N2Zz4=';
       expect(sanitizeImageUrl(svgDataUrl)).toBeUndefined();
     });
+
+    it('should reject case-insensitive SVG data URLs', () => {
+      const svgDataUrl = 'data:image/SVG+XML;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxzY3JpcHQ+YWxlcnQoMSk8L3NjcmlwdD48L3N2Zz4=';
+      expect(sanitizeImageUrl(svgDataUrl)).toBeUndefined();
+    });
+
+    it('should allow case-insensitive data: protocol for safe images', () => {
+      const dataUrl = 'DATA:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+      expect(sanitizeImageUrl(dataUrl)).toBe(dataUrl);
+    });
   });
 
   describe('sanitizeAlbum', () => {
