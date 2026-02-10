@@ -24,10 +24,16 @@ func main() {
 	dbURL := os.Getenv("DATABASE_URL")
 	if dbURL != "" {
 		db, err = sqlx.Connect("postgres", dbURL)
-		fmt.Println("Connected to PostgreSQL")
+		if err == nil {
+			fmt.Println("Connected to PostgreSQL")
+		}
 	} else {
-		db, err = sqlx.Open("sqlite3", "albumshelf.db")
-		fmt.Println("Using local SQLite database")
+		db, err = sqlx.Connect("sqlite3", "albumshelf.db")
+		if err == nil {
+			fmt.Println("Using local SQLite database")
+			// Enable foreign keys for SQLite
+			db.MustExec("PRAGMA foreign_keys = ON")
+		}
 	}
 
 	if err != nil {
@@ -36,13 +42,17 @@ func main() {
 
 	// Initialize schema
 	schema := `
+	CREATE TABLE IF NOT EXISTS users (
+		id TEXT PRIMARY KEY
+	);
+
 	CREATE TABLE IF NOT EXISTS folders (
 		id TEXT PRIMARY KEY,
 		user_id TEXT NOT NULL,
 		parent_id TEXT,
 		name TEXT NOT NULL,
 		is_expanded BOOLEAN DEFAULT TRUE,
-		position INTEGER DEFAULT 0,
+		"position" INTEGER DEFAULT 0,
 		FOREIGN KEY (parent_id) REFERENCES folders(id) ON DELETE CASCADE
 	);
 
@@ -51,16 +61,43 @@ func main() {
 		folder_id TEXT NOT NULL,
 		user_id TEXT NOT NULL,
 		spotify_id TEXT,
+		spotify_url TEXT,
 		name TEXT NOT NULL,
 		artist TEXT NOT NULL,
 		image_url TEXT NOT NULL,
 		release_date TEXT,
 		total_tracks INTEGER,
 		external_url TEXT,
-		position INTEGER DEFAULT 0,
+		"position" INTEGER DEFAULT 0,
 		FOREIGN KEY (folder_id) REFERENCES folders(id) ON DELETE CASCADE
 	);`
 	db.MustExec(schema)
+
+	// Seed 'dev' user robustly
+	_, err = db.Exec("INSERT INTO users (id) VALUES ('dev') ON CONFLICT (id) DO NOTHING")
+	if err != nil {
+		fmt.Printf("Initial seed failed: %v, attempting fallback...\n", err)
+		// Try fallback with common columns if the previous one failed (e.g. NOT NULL constraints)
+		_, errFallback := db.Exec("INSERT INTO users (id, email) VALUES ('dev', 'dev@example.com') ON CONFLICT (id) DO NOTHING")
+		if errFallback != nil {
+			fmt.Printf("Fallback seed also failed: %v. Database might be in an inconsistent state.\n", errFallback)
+		} else {
+			fmt.Println("Fallback seed successful.")
+		}
+	}
+
+	// Ensure spotify_url exists for existing databases
+	if dbURL != "" {
+		// PostgreSQL
+		db.Exec("ALTER TABLE albums ADD COLUMN IF NOT EXISTS spotify_url TEXT")
+	} else {
+		// SQLite doesn't support ADD COLUMN IF NOT EXISTS, so we check if it exists first
+		var count int
+		db.Get(&count, "SELECT count(*) FROM pragma_table_info('albums') WHERE name='spotify_url'")
+		if count == 0 {
+			db.Exec("ALTER TABLE albums ADD COLUMN spotify_url TEXT")
+		}
+	}
 
 	repo := sqlite.NewSQLiteRepository(db)
 	folderService := service.NewFolderService(repo)
