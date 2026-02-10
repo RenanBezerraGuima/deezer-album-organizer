@@ -12,6 +12,7 @@ type Repository interface {
 	GetFoldersByUserID(ctx context.Context, userID string) ([]*models.Folder, error)
 	UpdateFolder(ctx context.Context, folder *models.Folder) error
 	DeleteFolder(ctx context.Context, id string) error
+	DeleteUserFolders(ctx context.Context, userID string) error
 
 	// Albums
 	AddAlbum(ctx context.Context, album *models.Album) error

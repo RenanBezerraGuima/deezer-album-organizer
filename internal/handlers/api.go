@@ -85,12 +85,15 @@ func (h *APIHandler) SaveData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// We'll use a transaction to clear and save
+	log.Printf("Saving data for user %s: %d root folders", userID, len(data.Folders))
 	err := h.folderService.OverwriteUserTree(r.Context(), userID, data.Folders)
 	if err != nil {
-		log.Printf("Error saving user tree for %s: %v", userID, err)
+		log.Printf("CRITICAL: Failed to save user tree for %s: %v", userID, err)
+		// Return the full error to the client to help debugging
 		http.Error(w, "Failed to save data: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+	log.Printf("Successfully saved data for user %s", userID)
 
 	w.WriteHeader(http.StatusOK)
 }

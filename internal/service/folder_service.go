@@ -24,17 +24,9 @@ func (s *FolderService) GetAlbums(ctx context.Context, folderID string) ([]*mode
 
 func (s *FolderService) OverwriteUserTree(ctx context.Context, userID string, tree []*models.FolderTree) error {
 	return s.repo.InTransaction(ctx, func(txRepo repository.Repository) error {
-		// Delete all existing folders and albums for this user
-		// We rely on ON DELETE CASCADE for albums, but we need to delete folders
-		folders, err := txRepo.GetFoldersByUserID(ctx, userID)
-		if err != nil {
+		// Delete all existing folders and albums for this user in one go
+		if err := txRepo.DeleteUserFolders(ctx, userID); err != nil {
 			return err
-		}
-
-		for _, f := range folders {
-			if err := txRepo.DeleteFolder(ctx, f.ID); err != nil {
-				return err
-			}
 		}
 
 		var saveNode func(repo repository.Repository, node *models.FolderTree, parentID *string, pos int) error

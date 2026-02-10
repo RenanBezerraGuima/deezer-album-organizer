@@ -48,7 +48,7 @@ func main() {
 		parent_id TEXT,
 		name TEXT NOT NULL,
 		is_expanded BOOLEAN DEFAULT TRUE,
-		position INTEGER DEFAULT 0,
+		"position" INTEGER DEFAULT 0,
 		FOREIGN KEY (parent_id) REFERENCES folders(id) ON DELETE CASCADE
 	);
 
@@ -57,13 +57,14 @@ func main() {
 		folder_id TEXT NOT NULL,
 		user_id TEXT NOT NULL,
 		spotify_id TEXT,
+		spotify_url TEXT,
 		name TEXT NOT NULL,
 		artist TEXT NOT NULL,
 		image_url TEXT NOT NULL,
 		release_date TEXT,
 		total_tracks INTEGER,
 		external_url TEXT,
-		position INTEGER DEFAULT 0,
+		"position" INTEGER DEFAULT 0,
 		FOREIGN KEY (folder_id) REFERENCES folders(id) ON DELETE CASCADE
 	);`
 	db.MustExec(schema)

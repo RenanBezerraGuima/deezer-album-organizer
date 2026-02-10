@@ -35,7 +35,7 @@ func (r *SQLiteRepository) ext() dbOrTx {
 
 func (r *SQLiteRepository) CreateFolder(ctx context.Context, folder *models.Folder) error {
 	_, err := r.ext().NamedExecContext(ctx, `
-		INSERT INTO folders (id, user_id, parent_id, name, is_expanded, position)
+		INSERT INTO folders (id, user_id, parent_id, name, is_expanded, "position")
 		VALUES (:id, :user_id, :parent_id, :name, :is_expanded, :position)
 	`, folder)
 	return err
@@ -49,13 +49,13 @@ func (r *SQLiteRepository) GetFolderByID(ctx context.Context, id string) (*model
 
 func (r *SQLiteRepository) GetFoldersByUserID(ctx context.Context, userID string) ([]*models.Folder, error) {
 	var folders []*models.Folder
-	err := r.ext().SelectContext(ctx, &folders, r.ext().Rebind("SELECT * FROM folders WHERE user_id = ? ORDER BY position ASC"), userID)
+	err := r.ext().SelectContext(ctx, &folders, r.ext().Rebind("SELECT * FROM folders WHERE user_id = ? ORDER BY \"position\" ASC"), userID)
 	return folders, err
 }
 
 func (r *SQLiteRepository) UpdateFolder(ctx context.Context, folder *models.Folder) error {
 	_, err := r.ext().NamedExecContext(ctx, `
-		UPDATE folders SET name = :name, is_expanded = :is_expanded, position = :position, parent_id = :parent_id
+		UPDATE folders SET name = :name, is_expanded = :is_expanded, "position" = :position, parent_id = :parent_id
 		WHERE id = :id
 	`, folder)
 	return err
@@ -66,17 +66,27 @@ func (r *SQLiteRepository) DeleteFolder(ctx context.Context, id string) error {
 	return err
 }
 
+func (r *SQLiteRepository) DeleteUserFolders(ctx context.Context, userID string) error {
+	// First delete all albums for this user to be safe, although cascade should handle it
+	_, err := r.ext().ExecContext(ctx, r.ext().Rebind("DELETE FROM albums WHERE user_id = ?"), userID)
+	if err != nil {
+		return err
+	}
+	_, err = r.ext().ExecContext(ctx, r.ext().Rebind("DELETE FROM folders WHERE user_id = ?"), userID)
+	return err
+}
+
 func (r *SQLiteRepository) AddAlbum(ctx context.Context, album *models.Album) error {
 	_, err := r.ext().NamedExecContext(ctx, `
-		INSERT INTO albums (id, folder_id, user_id, spotify_id, name, artist, image_url, release_date, total_tracks, external_url, position)
-		VALUES (:id, :folder_id, :user_id, :spotify_id, :name, :artist, :image_url, :release_date, :total_tracks, :external_url, :position)
+		INSERT INTO albums (id, folder_id, user_id, spotify_id, spotify_url, name, artist, image_url, release_date, total_tracks, external_url, "position")
+		VALUES (:id, :folder_id, :user_id, :spotify_id, :spotify_url, :name, :artist, :image_url, :release_date, :total_tracks, :external_url, :position)
 	`, album)
 	return err
 }
 
 func (r *SQLiteRepository) GetAlbumsByFolderID(ctx context.Context, folderID string) ([]*models.Album, error) {
 	var albums []*models.Album
-	err := r.ext().SelectContext(ctx, &albums, r.ext().Rebind("SELECT * FROM albums WHERE folder_id = ? ORDER BY position ASC"), folderID)
+	err := r.ext().SelectContext(ctx, &albums, r.ext().Rebind("SELECT * FROM albums WHERE folder_id = ? ORDER BY \"position\" ASC"), folderID)
 	return albums, err
 }
 
@@ -86,7 +96,7 @@ func (r *SQLiteRepository) RemoveAlbum(ctx context.Context, albumID string) erro
 }
 
 func (r *SQLiteRepository) UpdateAlbumPosition(ctx context.Context, albumID string, folderID string, position int) error {
-	_, err := r.ext().ExecContext(ctx, r.ext().Rebind("UPDATE albums SET folder_id = ?, position = ? WHERE id = ?"), folderID, position, albumID)
+	_, err := r.ext().ExecContext(ctx, r.ext().Rebind("UPDATE albums SET folder_id = ?, \"position\" = ? WHERE id = ?"), folderID, position, albumID)
 	return err
 }
 
