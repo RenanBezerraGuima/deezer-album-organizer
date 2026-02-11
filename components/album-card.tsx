@@ -3,7 +3,16 @@
 import React from "react";
 import { useState } from 'react';
 import { Play, GripVertical, Trash2, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { useFolderStore } from '@/lib/store';
 import type { Album } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -14,8 +23,12 @@ interface AlbumCardProps {
 }
 
 export const AlbumCard = React.memo(function AlbumCard({ album, folderId }: AlbumCardProps) {
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
   const handleRemove = () => {
     useFolderStore.getState().removeAlbumFromFolder(folderId, album.id);
+    toast.success(`REMOVED: ${album.name.toUpperCase()}`);
+    setIsDeleteDialogOpen(false);
   };
 
   const handlePlay = () => {
@@ -50,7 +63,7 @@ export const AlbumCard = React.memo(function AlbumCard({ album, folderId }: Albu
           variant="destructive"
           className="h-7 w-7 border-2 border-border brutalist-shadow-sm"
           style={{ borderRadius: 'var(--radius)' }}
-          onClick={handleRemove}
+          onClick={() => setIsDeleteDialogOpen(true)}
           aria-label="Remove album"
           title="Remove album"
         >
@@ -58,10 +71,37 @@ export const AlbumCard = React.memo(function AlbumCard({ album, folderId }: Albu
         </Button>
       </div>
 
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Remove Album</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to remove "{album.name}" from this collection?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="ghost"
+              onClick={() => setIsDeleteDialogOpen(false)}
+              className="rounded-none border-2 border-transparent hover:border-border"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleRemove}
+              className="rounded-none brutalist-shadow-sm"
+            >
+              Remove
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <div className="aspect-square relative border-b-2 border-border overflow-hidden">
         <img
           src={album.imageUrl || "/placeholder.svg"}
-          alt={album.name}
+          alt={`${album.name} by ${album.artist}`}
           loading="lazy"
           decoding="async"
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
