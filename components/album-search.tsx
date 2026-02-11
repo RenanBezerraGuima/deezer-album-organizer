@@ -51,7 +51,7 @@ const SearchResultItem = React.memo(function SearchResultItem({
     >
       <img
         src={album.imageUrl || "/placeholder.svg"}
-        alt={album.name}
+        alt={`${album.name} by ${album.artist}`}
         decoding="async"
         className="w-12 h-12 border border-border object-cover shrink-0 bg-muted"
         style={{ borderRadius: 'calc(var(--radius) / 2)' }}

@@ -5,3 +5,7 @@
 ## 2025-05-15 - [Empty State CTAs for Better Onboarding]
 **Learning:** In a minimalist or technical UI (like the "Industrial" theme), empty states can easily feel like "dead ends" if they only contain static text. Adding a prominent, themed CTA button (e.g., using a dashed border for a "placeholder" look) significantly improves the onboarding experience and makes the next logical step unambiguous.
 **Action:** Always accompany empty state messages with a direct call-to-action button that triggers the primary intended interaction for that view.
+
+## 2026-02-11 - [Album Removal Safeguards]
+**Learning:** Destructive actions on individual items (like albums) require the same level of protection as larger entities (like folders) in a local-first application. Users expect consistent safety patterns across the UI.
+**Action:** Apply the confirmation dialog + toast feedback pattern consistently to all destructive actions, regardless of the item's perceived "size" in the hierarchy.
