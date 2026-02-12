@@ -113,6 +113,10 @@ describe('Security Utilities', () => {
       expect(sanitizeUrl('//evil.com')).toBeUndefined();
     });
 
+    it('should reject backslash protocol-relative URL bypasses', () => {
+      expect(sanitizeUrl('/\\evil.com')).toBeUndefined();
+    });
+
     it('should handle undefined or empty input', () => {
       expect(sanitizeUrl(undefined)).toBeUndefined();
       expect(sanitizeUrl('')).toBeUndefined();
