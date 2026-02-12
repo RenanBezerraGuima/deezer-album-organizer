@@ -25,8 +25,8 @@ export function sanitizeUrl(url: string | undefined, allowedProtocols = ALLOWED_
     }
   } catch (e) {
     // If it's not a valid absolute URL, check if it's a safe relative path.
-    // We explicitly exclude protocol-relative URLs (starting with //) for security.
-    if ((trimmedUrl.startsWith('/') && !trimmedUrl.startsWith('//')) ||
+    // We explicitly exclude protocol-relative URLs (starting with // or /\) for security.
+    if ((trimmedUrl.startsWith('/') && !trimmedUrl.startsWith('//') && !trimmedUrl.startsWith('/\\')) ||
         trimmedUrl.startsWith('./') ||
         trimmedUrl.startsWith('../')) {
       return trimmedUrl;

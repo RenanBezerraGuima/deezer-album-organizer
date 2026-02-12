@@ -27,7 +27,7 @@ describe('AlbumCard', () => {
     const playButton = screen.getByLabelText('Play album');
     fireEvent.click(playButton);
 
-    expect(openSpy).toHaveBeenCalledWith(mockAlbum.externalUrl, '_blank');
+    expect(openSpy).toHaveBeenCalledWith(mockAlbum.externalUrl, '_blank', 'noopener,noreferrer');
     openSpy.mockRestore();
   });
 

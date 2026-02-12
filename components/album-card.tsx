@@ -32,14 +32,14 @@ export const AlbumCard = React.memo(function AlbumCard({ album, folderId }: Albu
   const handlePlay = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (album.externalUrl) {
-      window.open(album.externalUrl, '_blank');
+      window.open(album.externalUrl, '_blank', 'noopener,noreferrer');
     } else {
       const { streamingProvider } = useFolderStore.getState();
       const searchQuery = `${album.name} ${album.artist}`;
       const url = streamingProvider === 'apple'
         ? `https://music.apple.com/search?term=${encodeURIComponent(searchQuery)}`
         : `https://www.deezer.com/search/${encodeURIComponent(searchQuery)}`;
-      window.open(url, '_blank');
+      window.open(url, '_blank', 'noopener,noreferrer');
     }
   };
 
