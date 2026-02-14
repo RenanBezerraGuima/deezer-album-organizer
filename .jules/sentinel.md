@@ -39,3 +39,8 @@
 **Vulnerability:** Sanitization logic for `data:` URLs could be bypassed using percent-encoding in the MIME type (e.g., `data:image/svg%2Bxml`).
 **Learning:** Browsers may decode percent-encoded MIME types in `data:` URLs. Security checks that rely on simple string matching or `startsWith` against the raw URL can be bypassed if they don't account for this decoding.
 **Prevention:** Always decode the MIME/metadata part of a `data:` URL using `decodeURIComponent` before performing security checks like blocking `svg+xml`. Similarly, be cautious of protocol-relative URLs (`//`) which can sometimes bypass relative-path filters if not explicitly handled.
+
+## 2026-03-05 - [URL Sanitization Bypasses]
+**Vulnerability:** `sanitizeUrl` missed multiple bypass vectors including control characters, internal whitespace, and various protocol-relative URL formats (e.g., `\\`, `\/`, and percent-encoded variants like `/%5c`).
+**Learning:** URL sanitization requires more than just a `new URL()` check. Attackers can use non-standard separators or encoded characters to bypass simple prefix checks while still achieving an open redirect or XSS in certain contexts.
+**Prevention:** Implement defense-in-depth in `sanitizeUrl` by explicitly blocking control characters/whitespace and checking for a wider range of protocol-relative separators, including their percent-encoded equivalents, before allowing relative paths.

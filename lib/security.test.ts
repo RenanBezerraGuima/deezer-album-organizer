@@ -117,6 +117,27 @@ describe('Security Utilities', () => {
       expect(sanitizeUrl('/\\evil.com')).toBeUndefined();
     });
 
+    it('should reject other protocol-relative URL bypasses', () => {
+      expect(sanitizeUrl('\\\\evil.com')).toBeUndefined();
+      expect(sanitizeUrl('\\/evil.com')).toBeUndefined();
+    });
+
+    it('should reject percent-encoded protocol-relative URL bypasses', () => {
+      expect(sanitizeUrl('/%5cevil.com')).toBeUndefined();
+      expect(sanitizeUrl('/%2fevil.com')).toBeUndefined();
+    });
+
+    it('should reject URLs with control characters', () => {
+      expect(sanitizeUrl('https://example.com/path\x00extra')).toBeUndefined();
+      expect(sanitizeUrl('https://example.com/path\x1Fextra')).toBeUndefined();
+      expect(sanitizeUrl('https://example.com/path\x7Fextra')).toBeUndefined();
+    });
+
+    it('should reject URLs with internal whitespace', () => {
+      expect(sanitizeUrl('https://example.com/path extra')).toBeUndefined();
+      expect(sanitizeUrl('https://example.com/path\textra')).toBeUndefined();
+    });
+
     it('should handle undefined or empty input', () => {
       expect(sanitizeUrl(undefined)).toBeUndefined();
       expect(sanitizeUrl('')).toBeUndefined();

@@ -18,6 +18,11 @@ export function sanitizeUrl(url: string | undefined, allowedProtocols = ALLOWED_
     return undefined;
   }
 
+  // Block control characters and internal whitespace which can be used for various bypasses
+  if (/[\x00-\x1F\x7F]/.test(trimmedUrl) || /\s/.test(trimmedUrl)) {
+    return undefined;
+  }
+
   try {
     const parsed = new URL(trimmedUrl);
     if (allowedProtocols.includes(parsed.protocol)) {
@@ -25,8 +30,21 @@ export function sanitizeUrl(url: string | undefined, allowedProtocols = ALLOWED_
     }
   } catch (e) {
     // If it's not a valid absolute URL, check if it's a safe relative path.
-    // We explicitly exclude protocol-relative URLs (starting with // or /\) for security.
-    if ((trimmedUrl.startsWith('/') && !trimmedUrl.startsWith('//') && !trimmedUrl.startsWith('/\\')) ||
+    // We explicitly exclude protocol-relative URLs for security to prevent open redirects.
+
+    // Check for various protocol-relative bypasses (//, /\, \\, \/)
+    const lowerUrl = trimmedUrl.toLowerCase();
+    if (lowerUrl.startsWith('//') || lowerUrl.startsWith('/\\') ||
+        lowerUrl.startsWith('\\\\') || lowerUrl.startsWith('\\/')) {
+      return undefined;
+    }
+
+    // Check for percent-encoded protocol-relative bypasses (e.g. /%5c, /%2f)
+    if (lowerUrl.startsWith('/%5c') || lowerUrl.startsWith('/%2f')) {
+      return undefined;
+    }
+
+    if (trimmedUrl.startsWith('/') ||
         trimmedUrl.startsWith('./') ||
         trimmedUrl.startsWith('../')) {
       return trimmedUrl;
