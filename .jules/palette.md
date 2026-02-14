@@ -9,3 +9,7 @@
 ## 2026-02-11 - [Album Removal Safeguards]
 **Learning:** Destructive actions on individual items (like albums) require the same level of protection as larger entities (like folders) in a local-first application. Users expect consistent safety patterns across the UI.
 **Action:** Apply the confirmation dialog + toast feedback pattern consistently to all destructive actions, regardless of the item's perceived "size" in the hierarchy.
+
+## 2026-02-14 - [Interactive Toggle & Input Character Counters]
+**Learning:** In a high-speed search interface, providing immediate visual feedback for actions (like add/remove) via icon toggles on hover significantly reduces cognitive load. Additionally, character counters on inputs with `maxLength` provide essential feedback for technical-industrial UIs where space is tight and input limits are enforced.
+**Action:** Use `group/item` hover states to toggle between action signals (e.g., Plus -> Check -> X) and always include `current/max` counters for constrained inputs.

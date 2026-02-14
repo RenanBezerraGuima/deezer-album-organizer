@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { Search, Loader2, Check, X, Menu } from 'lucide-react';
+import { Search, Loader2, Check, X, Menu, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -38,8 +38,10 @@ const SearchResultItem = React.memo(function SearchResultItem({
       onClick={() => onSelect(album)}
       role="option"
       aria-selected={isActive}
+      aria-label={isAdded ? `Remove ${album.name} by ${album.artist} from collection` : `Add ${album.name} by ${album.artist} to collection`}
+      title={isAdded ? "Remove from collection" : "Add to collection"}
       className={cn(
-        "flex items-center gap-4 p-3 transition-all duration-100 mx-1 border border-transparent",
+        "flex items-center gap-4 p-3 transition-all duration-100 mx-1 border border-transparent group/item",
         !disabled
           ? "cursor-pointer hover:bg-primary hover:text-primary-foreground hover:border-border"
           : "opacity-60 cursor-not-allowed",
@@ -72,9 +74,16 @@ const SearchResultItem = React.memo(function SearchResultItem({
           </span>
         </div>
       </div>
-      {isAdded && (
-        <Check className="h-4 w-4 shrink-0" />
-      )}
+      <div className="relative w-4 h-4 shrink-0 flex items-center justify-center">
+        {isAdded ? (
+          <>
+            <Check className="h-4 w-4 absolute transition-all duration-200 group-hover/item:opacity-0 group-hover/item:scale-0" />
+            <X className="h-4 w-4 absolute transition-all duration-200 opacity-0 scale-0 group-hover/item:opacity-100 group-hover/item:scale-100 text-destructive" />
+          </>
+        ) : (
+          <Plus className="h-4 w-4 transition-all duration-200 opacity-0 scale-0 group-hover/item:opacity-100 group-hover/item:scale-100" />
+        )}
+      </div>
     </div>
   );
 });
@@ -296,7 +305,7 @@ export function AlbumSearch({ isMobile, onMenuClick }: AlbumSearchProps) {
             onFocus={handleFocus}
             onKeyDown={handleKeyDown}
             className={cn(
-              "pl-12 pr-10 h-12 w-full bg-background border-2 border-border focus:ring-0 focus:border-primary focus:brutalist-shadow transition-all uppercase tracking-tighter",
+              "pl-12 pr-24 h-12 w-full bg-background border-2 border-border focus:ring-0 focus:border-primary focus:brutalist-shadow transition-all uppercase tracking-tighter",
               isMobile ? "text-base" : "text-lg"
             )}
             style={{ borderRadius: 'var(--radius)', fontFamily: 'var(--font-mono)' }}
@@ -308,7 +317,12 @@ export function AlbumSearch({ isMobile, onMenuClick }: AlbumSearchProps) {
             aria-activedescendant={activeIndex >= 0 ? `option-${activeIndex}` : undefined}
             role="combobox"
           />
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center">
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-3">
+            {query.length > 0 && (
+              <span className="text-[10px] font-mono opacity-40 select-none mr-1" aria-hidden="true">
+                {query.length}/200
+              </span>
+            )}
             {isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
             ) : query ? (
