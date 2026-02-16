@@ -13,3 +13,7 @@
 ## 2025-05-16 - [Search Result Hover Affordance]
 **Learning:** Providing visual affordance for primary actions in a search list (like adding an item) is critical for discoverability. Using a 'Plus' icon on hover for non-added items, and an 'X' on hover for added items (replacing a 'Check' mark), creates a consistent and intuitive interaction pattern.
 **Action:** Always ensure interactive list items have clear hover states that signal their primary affordance, while maintaining accessibility via ARIA labels on the container.
+
+## 2026-05-20 - [Character Counters and Double-Click Shortcuts]
+**Learning:** Combining intuitive shortcuts (double-click to rename) with real-time feedback (character counters) enhances both power-user efficiency and general accessibility. When implementing counters, using `aria-describedby` ensures screen reader compatibility, while slightly larger font sizes and higher contrast maintain legibility in technical UIs.
+**Action:** Always link character counters to their inputs using ARIA attributes and ensure they meet minimum contrast requirements even in minimalist themes.
