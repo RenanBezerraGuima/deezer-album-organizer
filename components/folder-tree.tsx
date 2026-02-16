@@ -217,6 +217,7 @@ const FolderItem = React.memo(function FolderItem({
             )}
             style={{ paddingLeft: `${depth * 16 + 8}px` }}
             onClick={handleClick}
+            onDoubleClick={(e) => { e.stopPropagation(); setIsEditing(true); setEditName(folder.name); }}
             draggable={!isEditing}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
@@ -255,18 +256,24 @@ const FolderItem = React.memo(function FolderItem({
                 className="flex items-center gap-1 flex-1 min-w-0"
                 onClick={(e) => e.stopPropagation()}
               >
-                <Input
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  className="h-6 text-sm py-0 flex-1 min-w-0 rounded-none border-border"
-                  autoFocus
-                  maxLength={100}
-                  aria-label="Rename collection"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleRename();
-                    if (e.key === "Escape") setIsEditing(false);
-                  }}
-                />
+                <div className="relative flex-1 min-w-0">
+                  <Input
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="h-6 text-sm py-0 pr-12 flex-1 min-w-0 rounded-none border-border"
+                    autoFocus
+                    maxLength={100}
+                    aria-label="Rename collection"
+                    aria-describedby={`rename-counter-${folder.id}`}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleRename();
+                      if (e.key === "Escape") setIsEditing(false);
+                    }}
+                  />
+                  <div id={`rename-counter-${folder.id}`} className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-mono text-muted-foreground pointer-events-none select-none uppercase" aria-live="polite">
+                    {editName.length}/100
+                  </div>
+                </div>
                 <Button
                   size="icon"
                   variant="ghost"
@@ -435,22 +442,28 @@ const FolderItem = React.memo(function FolderItem({
               style={{ paddingLeft: `${(depth + 1) * 16 + 8}px` }}
             >
               <Folder className="h-4 w-4 text-accent shrink-0" />
-              <Input
-                value={newSubfolderName}
-                onChange={(e) => setNewSubfolderName(e.target.value)}
-                placeholder="Sub-collection name"
-                className="h-6 text-sm py-0 flex-1 min-w-0"
-                autoFocus
-                maxLength={100}
-                aria-label="Sub-collection name"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleCreateSubfolder();
-                  if (e.key === "Escape") {
-                    setIsCreatingSubfolder(false);
-                    setNewSubfolderName("");
-                  }
-                }}
-              />
+              <div className="relative flex-1 min-w-0">
+                <Input
+                  value={newSubfolderName}
+                  onChange={(e) => setNewSubfolderName(e.target.value)}
+                  placeholder="Sub-collection name"
+                  className="h-6 text-sm py-0 pr-12 flex-1 min-w-0"
+                  autoFocus
+                  maxLength={100}
+                  aria-label="Sub-collection name"
+                  aria-describedby={`subfolder-counter-${folder.id}`}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleCreateSubfolder();
+                    if (e.key === "Escape") {
+                      setIsCreatingSubfolder(false);
+                      setNewSubfolderName("");
+                    }
+                  }}
+                />
+                <div id={`subfolder-counter-${folder.id}`} className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-mono text-muted-foreground pointer-events-none select-none uppercase" aria-live="polite">
+                  {newSubfolderName.length}/100
+                </div>
+              </div>
               <Button
                 size="icon"
                 variant="ghost"
@@ -562,22 +575,28 @@ export function FolderTree() {
           {isCreating && (
             <div className="flex items-center gap-1 px-2 py-1.5 mb-2">
               <Folder className="h-4 w-4 text-accent shrink-0 ml-5" />
-              <Input
-                value={newFolderName}
-                onChange={(e) => setNewFolderName(e.target.value)}
-                placeholder="Collection name"
-                className="h-7 text-sm flex-1"
-                autoFocus
-                maxLength={100}
-                aria-label="Collection name"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleCreateFolder();
-                  if (e.key === "Escape") {
-                    setIsCreating(false);
-                    setNewFolderName("");
-                  }
-                }}
-              />
+              <div className="relative flex-1 min-w-0">
+                <Input
+                  value={newFolderName}
+                  onChange={(e) => setNewFolderName(e.target.value)}
+                  placeholder="Collection name"
+                  className="h-7 text-sm pr-12 flex-1 w-full"
+                  autoFocus
+                  maxLength={100}
+                  aria-label="Collection name"
+                  aria-describedby="root-folder-counter"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleCreateFolder();
+                    if (e.key === "Escape") {
+                      setIsCreating(false);
+                      setNewFolderName("");
+                    }
+                  }}
+                />
+                <div id="root-folder-counter" className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-mono text-muted-foreground pointer-events-none select-none uppercase" aria-live="polite">
+                  {newFolderName.length}/100
+                </div>
+              </div>
               <Button
                 size="icon"
                 variant="ghost"
