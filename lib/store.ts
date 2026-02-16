@@ -1,10 +1,15 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { Folder, Album, Theme, AlbumViewMode } from "./types";
-import { sanitizeUrl, sanitizeImageUrl, sanitizeAlbum } from "./security";
+import type { Folder, Album, Theme, AlbumViewMode, StreamingProvider } from "./types";
+import {
+  sanitizeUrl,
+  sanitizeImageUrl,
+  sanitizeAlbum,
+  isValidTheme,
+  isValidViewMode,
+  isValidStreamingProvider,
+} from "./security";
 import { createInitialAlbumPosition, normalizeAlbumPosition } from "./spatial";
-
-export type StreamingProvider = "deezer" | "apple" | "spotify";
 
 interface FolderStore {
   folders: Folder[];
@@ -565,7 +570,7 @@ export const useFolderStore = create<FolderStore>()(
               albums: sanitizedAlbums,
               subfolders: sanitizeAndRegenerate(folder.subfolders || [], newId),
               isExpanded: Boolean(folder.isExpanded),
-              viewMode: (folder.viewMode as AlbumViewMode) || "grid",
+              viewMode: isValidViewMode(folder.viewMode) ? folder.viewMode : "grid",
             };
           });
         };
@@ -610,6 +615,7 @@ export const useFolderStore = create<FolderStore>()(
       },
 
       setStreamingProvider: (provider) => {
+        if (!isValidStreamingProvider(provider)) return;
         set({ streamingProvider: provider, lastUpdated: Date.now() });
       },
 
@@ -626,8 +632,12 @@ export const useFolderStore = create<FolderStore>()(
         });
       },
 
-      setTheme: (theme) => set({ theme, lastUpdated: Date.now() }),
+      setTheme: (theme) => {
+        if (!isValidTheme(theme)) return;
+        set({ theme, lastUpdated: Date.now() });
+      },
       setFolderViewMode: (id, mode) => {
+        if (!isValidViewMode(mode)) return;
         set((state) => ({
           folders: updateFolderInTree(state.folders, id, (folder) => ({
             ...folder,
