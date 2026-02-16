@@ -1,5 +1,11 @@
 export type Theme = 'industrial' | 'editorial' | 'glitch' | 'organic' | 'refined';
+export const THEMES: Theme[] = ['industrial', 'editorial', 'glitch', 'organic', 'refined'];
+
 export type AlbumViewMode = 'grid' | 'canvas';
+export const VIEW_MODES: AlbumViewMode[] = ['grid', 'canvas'];
+
+export type StreamingProvider = 'deezer' | 'apple' | 'spotify';
+export const STREAMING_PROVIDERS: StreamingProvider[] = ['deezer', 'apple', 'spotify'];
 
 export interface AlbumPosition {
   x: number;

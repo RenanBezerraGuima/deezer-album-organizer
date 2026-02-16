@@ -10,7 +10,8 @@ import {
   DialogFooter
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useFolderStore, StreamingProvider } from '@/lib/store';
+import { useFolderStore } from '@/lib/store';
+import type { StreamingProvider } from '@/lib/types';
 import { Music, Radio } from 'lucide-react';
 
 export function FirstTimeSetup() {

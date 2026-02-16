@@ -54,3 +54,8 @@
 **Vulnerability:** The `jsonp` utility allowed loading scripts from any URL provided, posing a massive XSS risk if the URL was ever influenced by external data.
 **Learning:** JSONP is an inherently dangerous pattern as it executes remote code. Even if currently used with hardcoded URLs, utilities like this should have "defense-in-depth" protections such as a domain whitelist to prevent future misuse or exploitation.
 **Prevention:** Implement a strict whitelist of trusted hostnames for all JSONP requests. Validate the hostname using the `URL` constructor before creating or appending any `<script>` tags to the document.
+
+## 2026-03-10 - [State Injection & Type Safety Gap]
+**Vulnerability:** Application state (Theme, ViewMode, StreamingProvider) was updated from untrusted sources (JSON imports, storage) without runtime validation, relying solely on TypeScript types.
+**Learning:** TypeScript provides compile-time safety, but runtime security requires explicit validation of data entering the application state from external boundaries. Unvalidated state can lead to class injection (in ThemeHandler) or logical bypasses.
+**Prevention:** Define runtime constants (allowlists) for all enumerated types and implement strict validation helpers. Enforce these validations at every entry point: individual setters, bulk import functions, and state hydration logic.

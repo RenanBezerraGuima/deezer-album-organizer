@@ -1,4 +1,5 @@
-import type { Album } from './types';
+import type { Album, Theme, AlbumViewMode, StreamingProvider } from './types';
+import { THEMES, VIEW_MODES, STREAMING_PROVIDERS } from './types';
 
 const ALLOWED_PROTOCOLS = ['http:', 'https:'];
 const MAX_URL_LENGTH = 2048;
@@ -78,6 +79,27 @@ export function sanitizeImageUrl(url: string | undefined): string | undefined {
   }
 
   return sanitizeUrl(trimmedUrl, ALLOWED_PROTOCOLS);
+}
+
+/**
+ * Validate if a string is a valid Theme.
+ */
+export function isValidTheme(theme: any): theme is Theme {
+  return typeof theme === 'string' && THEMES.includes(theme as Theme);
+}
+
+/**
+ * Validate if a string is a valid AlbumViewMode.
+ */
+export function isValidViewMode(mode: any): mode is AlbumViewMode {
+  return typeof mode === 'string' && VIEW_MODES.includes(mode as AlbumViewMode);
+}
+
+/**
+ * Validate if a string is a valid StreamingProvider.
+ */
+export function isValidStreamingProvider(provider: any): provider is StreamingProvider {
+  return typeof provider === 'string' && STREAMING_PROVIDERS.includes(provider as StreamingProvider);
 }
 
 /**
