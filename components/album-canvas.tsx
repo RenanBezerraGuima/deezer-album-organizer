@@ -154,6 +154,15 @@ export function AlbumCanvas({ albums, folderId }: AlbumCanvasProps) {
             <div
               key={album.id}
               data-album-card
+              draggable
+              onDragStart={(e) => {
+                useFolderStore.getState().setDraggedAlbum(album, folderId, null);
+                e.dataTransfer.setData('text/plain', album.id);
+                e.dataTransfer.effectAllowed = 'move';
+              }}
+              onDragEnd={() => {
+                useFolderStore.getState().setDraggedAlbum(null, null, null);
+              }}
               className={cn('absolute pointer-events-auto', isDragging && 'z-50')}
               style={{
                 left: position.x,

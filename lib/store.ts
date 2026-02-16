@@ -469,8 +469,19 @@ export const useFolderStore = create<FolderStore>()(
         const album = fromFolder.albums.find((a) => a.id === albumId);
         if (!album) return;
 
-        // Check if album already exists in target folder by spotifyId
-        if (toFolder.albums.some((a) => a.spotifyId === album.spotifyId)) {
+        // Check if album already exists in target folder by id or spotifyId
+        const isDuplicate = toFolder.albums.some((a) => {
+          if (a.id === album.id) return true;
+          if (
+            a.spotifyId &&
+            album.spotifyId &&
+            a.spotifyId === album.spotifyId
+          )
+            return true;
+          return false;
+        });
+
+        if (isDuplicate) {
           return;
         }
 

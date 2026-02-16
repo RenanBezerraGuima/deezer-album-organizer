@@ -48,6 +48,7 @@ export function AlbumGrid({ isMobile }: { isMobile?: boolean }) {
 
   const handleDragStart = (e: React.DragEvent, album: Album, index: number) => {
     useFolderStore.getState().setDraggedAlbum(album, selectedFolderId, index);
+    e.dataTransfer.setData('text/plain', album.id);
     e.dataTransfer.effectAllowed = 'move';
   };
 
