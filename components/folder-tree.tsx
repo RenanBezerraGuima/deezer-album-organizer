@@ -139,8 +139,10 @@ const FolderItem = React.memo(function FolderItem({
         setDropPosition(newPosition);
       }
       if (!isDragOver) setIsDragOver(true);
+      e.dataTransfer.dropEffect = "move";
     } else if (draggedAlbum) {
       if (!isDragOver) setIsDragOver(true);
+      e.dataTransfer.dropEffect = "move";
     }
   };
 
