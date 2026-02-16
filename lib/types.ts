@@ -1,6 +1,9 @@
 export type Theme = 'industrial' | 'editorial' | 'glitch' | 'organic' | 'refined' | 'mint';
 export const THEMES: Theme[] = ['industrial', 'editorial', 'glitch', 'organic', 'refined', 'mint'];
 
+export type GeistFont = 'sans' | 'mono' | 'pixel-square' | 'pixel-grid' | 'pixel-circle' | 'pixel-line';
+export const GEIST_FONTS: GeistFont[] = ['sans', 'mono', 'pixel-square', 'pixel-grid', 'pixel-circle', 'pixel-line'];
+
 export type AlbumViewMode = 'grid' | 'canvas';
 export const VIEW_MODES: AlbumViewMode[] = ['grid', 'canvas'];
 

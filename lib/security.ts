@@ -1,5 +1,5 @@
-import type { Album, Theme, AlbumViewMode, StreamingProvider } from './types';
-import { THEMES, VIEW_MODES, STREAMING_PROVIDERS } from './types';
+import type { Album, Theme, AlbumViewMode, StreamingProvider, GeistFont } from './types';
+import { THEMES, VIEW_MODES, STREAMING_PROVIDERS, GEIST_FONTS } from './types';
 
 const ALLOWED_PROTOCOLS = ['http:', 'https:'];
 const MAX_URL_LENGTH = 2048;
@@ -86,6 +86,13 @@ export function sanitizeImageUrl(url: string | undefined): string | undefined {
  */
 export function isValidTheme(theme: any): theme is Theme {
   return typeof theme === 'string' && THEMES.includes(theme as Theme);
+}
+
+/**
+ * Validate if a string is a valid GeistFont.
+ */
+export function isValidGeistFont(font: any): font is GeistFont {
+  return typeof font === 'string' && GEIST_FONTS.includes(font as GeistFont);
 }
 
 /**
