@@ -123,7 +123,7 @@ export const SettingsDialog = memo(function SettingsDialog() {
                 Design Iteration
               </h4>
               <div className="grid grid-cols-2 gap-2">
-                {(['industrial', 'editorial', 'glitch', 'organic', 'refined'] as Theme[]).map((t) => (
+                {(['industrial', 'editorial', 'glitch', 'organic', 'refined', 'mint'] as Theme[]).map((t) => (
                   <Button
                     key={t}
                     variant={theme === t ? 'default' : 'outline'}

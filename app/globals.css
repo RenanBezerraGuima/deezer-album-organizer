@@ -292,3 +292,35 @@
 [data-nextjs-dialog-overlay] {
   display: none !important;
 }
+
+.theme-mint {
+  --font-display: var(--font-syne);
+  --font-body: var(--font-hanken);
+  --font-mono: var(--font-jetbrains);
+  --background: oklch(0.97 0 0);
+  --foreground: oklch(0 0 0);
+  --primary: oklch(0.81 0.05 166);
+  --accent: oklch(0.96 0.04 155);
+  --border: oklch(0 0 0);
+  --radius: 0.5rem;
+  --shadow-offset: 4px;
+  --shadow-offset-sm: 2px;
+  --shadow-color: var(--primary);
+  --bg-pattern: radial-gradient(circle, var(--primary) 0.5px, transparent 0.5px);
+  --bg-size: 24px 24px;
+}
+
+.dark .theme-mint {
+  --background: oklch(0 0 0);
+  --foreground: oklch(0.97 0 0);
+  --primary: oklch(0.81 0.05 166);
+  --accent: oklch(0.96 0.04 155);
+  --border: oklch(0.81 0.05 166);
+  --shadow-color: oklch(0.81 0.05 166 / 0.5);
+  --bg-pattern: radial-gradient(circle, oklch(0.2 0.05 166) 1px, transparent 1px);
+}
+
+.theme-mint .bg-card {
+  @apply border-2 border-border;
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0px 0px var(--shadow-color);
+}
