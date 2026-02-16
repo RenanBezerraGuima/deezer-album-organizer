@@ -4,6 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  --font-geist: var(--font-geist-sans);
   --background: oklch(0.98 0.01 200);
   --foreground: oklch(0.1 0 0);
   --card: oklch(1 0 0);
@@ -117,9 +118,9 @@
 }
 
 .theme-industrial {
-  --font-display: var(--font-jetbrains);
-  --font-body: var(--font-jetbrains);
-  --font-mono: var(--font-jetbrains);
+  --font-display: var(--font-geist);
+  --font-body: var(--font-geist);
+  --font-mono: var(--font-geist);
   --radius: 0rem;
   --shadow-offset: 6px;
   --shadow-offset-sm: 3px;
@@ -133,9 +134,9 @@
 }
 
 .theme-editorial {
-  --font-display: var(--font-fraunces);
-  --font-body: var(--font-hanken);
-  --font-mono: var(--font-jetbrains);
+  --font-display: var(--font-geist);
+  --font-body: var(--font-geist);
+  --font-mono: var(--font-geist);
   --background: oklch(0.97 0.01 70);
   --foreground: oklch(0.15 0.02 20);
   --primary: oklch(0.4 0.1 20);
@@ -163,9 +164,9 @@
 }
 
 .theme-glitch {
-  --font-display: var(--font-syne);
-  --font-body: var(--font-hanken);
-  --font-mono: var(--font-jetbrains);
+  --font-display: var(--font-geist);
+  --font-body: var(--font-geist);
+  --font-mono: var(--font-geist);
   --background: oklch(0.95 0.01 0);
   --foreground: oklch(0.1 0 0);
   --primary: oklch(0.6 0.3 330);
@@ -198,9 +199,9 @@
 }
 
 .theme-organic {
-  --font-display: var(--font-bricolage);
-  --font-body: var(--font-hanken);
-  --font-mono: var(--font-jetbrains);
+  --font-display: var(--font-geist);
+  --font-body: var(--font-geist);
+  --font-mono: var(--font-geist);
   --background: oklch(0.95 0.05 160);
   --foreground: oklch(0.2 0.05 160);
   --primary: oklch(0.8 0.15 145);
@@ -232,9 +233,9 @@
 }
 
 .theme-refined {
-  --font-display: var(--font-cormorant);
-  --font-body: var(--font-hanken);
-  --font-mono: var(--font-jetbrains);
+  --font-display: var(--font-geist);
+  --font-body: var(--font-geist);
+  --font-mono: var(--font-geist);
   --background: oklch(0.98 0.01 40);
   --foreground: oklch(0.2 0.05 20);
   --primary: oklch(0.6 0.1 50);
@@ -293,10 +294,17 @@
   display: none !important;
 }
 
+[data-geist-font="sans"] { --font-geist: var(--font-geist-sans); }
+[data-geist-font="mono"] { --font-geist: var(--font-geist-mono); }
+[data-geist-font="pixel-square"] { --font-geist: var(--font-geist-pixel-square); }
+[data-geist-font="pixel-grid"] { --font-geist: var(--font-geist-pixel-grid); }
+[data-geist-font="pixel-circle"] { --font-geist: var(--font-geist-pixel-circle); }
+[data-geist-font="pixel-line"] { --font-geist: var(--font-geist-pixel-line); }
+
 .theme-mint {
-  --font-display: var(--font-syne);
-  --font-body: var(--font-hanken);
-  --font-mono: var(--font-jetbrains);
+  --font-display: var(--font-geist);
+  --font-body: var(--font-geist);
+  --font-mono: var(--font-geist);
   --background: oklch(0.97 0 0);
   --foreground: oklch(0 0 0);
   --primary: oklch(0.81 0.05 166);

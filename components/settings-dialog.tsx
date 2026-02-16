@@ -33,6 +33,7 @@ export const SettingsDialog = memo(function SettingsDialog() {
   } = useFolderStore(useShallow((state) => ({
     streamingProvider: state.streamingProvider,
     theme: state.theme,
+    geistFont: state.geistFont,
     spotifyToken: state.spotifyToken,
     spotifyTokenExpiry: state.spotifyTokenExpiry,
     spotifyTokenTimestamp: state.spotifyTokenTimestamp,
@@ -137,6 +138,46 @@ export const SettingsDialog = memo(function SettingsDialog() {
                     <div className="absolute bottom-0 left-0 w-full h-1 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
                   </Button>
                 ))}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h4 className="text-sm font-black uppercase tracking-tight border-b-2 border-border pb-1">
+                Typography (Geist)
+              </h4>
+              <div className="flex flex-col gap-4">
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    variant={geistFont === 'sans' ? 'default' : 'outline'}
+                    className="justify-start gap-2 rounded-none h-10"
+                    onClick={() => useFolderStore.getState().setGeistFont('sans')}
+                  >
+                    <span className="text-[10px] font-bold uppercase tracking-widest">Sans</span>
+                  </Button>
+                  <Button
+                    variant={geistFont === 'mono' ? 'default' : 'outline'}
+                    className="justify-start gap-2 rounded-none h-10"
+                    onClick={() => useFolderStore.getState().setGeistFont('mono')}
+                  >
+                    <span className="text-[10px] font-bold uppercase tracking-widest">Mono</span>
+                  </Button>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-[10px] font-mono uppercase text-muted-foreground">Pixel Variations</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {['pixel-square', 'pixel-grid', 'pixel-circle', 'pixel-line'].map((f) => (
+                      <Button
+                        key={f}
+                        variant={geistFont === f ? 'default' : 'outline'}
+                        className="justify-start gap-2 rounded-none h-8"
+                        onClick={() => useFolderStore.getState().setGeistFont(f as any)}
+                      >
+                        <span className="text-[9px] font-bold uppercase tracking-widest">{f.replace('pixel-', '')}</span>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
 

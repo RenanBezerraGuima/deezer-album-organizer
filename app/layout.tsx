@@ -10,6 +10,14 @@ import {
   JetBrains_Mono,
   Hanken_Grotesk
 } from 'next/font/google'
+import { GeistSans } from 'geist/font/sans'
+import { GeistMono } from 'geist/font/mono'
+import {
+  GeistPixelSquare,
+  GeistPixelGrid,
+  GeistPixelCircle,
+  GeistPixelLine
+} from 'geist/font/pixel'
 import './globals.css'
 
 const syne = Syne({ subsets: ['latin'], variable: '--font-syne' })
@@ -46,6 +54,12 @@ export default function RootLayout({
         ${cormorant.variable}
         ${jetbrains.variable}
         ${hanken.variable}
+        ${GeistSans.variable}
+        ${GeistMono.variable}
+        ${GeistPixelSquare.variable}
+        ${GeistPixelGrid.variable}
+        ${GeistPixelCircle.variable}
+        ${GeistPixelLine.variable}
         antialiased
       `}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>

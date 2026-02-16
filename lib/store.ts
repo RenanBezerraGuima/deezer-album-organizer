@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { Folder, Album, Theme, AlbumViewMode, StreamingProvider } from "./types";
+import type { Folder, Album, Theme, AlbumViewMode, StreamingProvider, GeistFont } from "./types";
 import {
   sanitizeUrl,
   sanitizeImageUrl,
@@ -8,6 +8,7 @@ import {
   isValidTheme,
   isValidViewMode,
   isValidStreamingProvider,
+  isValidGeistFont,
 } from "./security";
 import { createInitialAlbumPosition, normalizeAlbumPosition } from "./spatial";
 
@@ -25,6 +26,7 @@ interface FolderStore {
   spotifyTokenExpiry: number | null;
   spotifyTokenTimestamp: number | null;
   theme: Theme;
+  geistFont: GeistFont;
   lastUpdated: number;
 
   // Folder actions
@@ -72,6 +74,7 @@ interface FolderStore {
     timestamp: number | null,
   ) => void;
   setTheme: (theme: Theme) => void;
+  setGeistFont: (font: GeistFont) => void;
   setFolderViewMode: (id: string, mode: AlbumViewMode) => void;
 }
 
@@ -85,6 +88,7 @@ export type SyncState = Pick<
   | "spotifyTokenExpiry"
   | "spotifyTokenTimestamp"
   | "theme"
+  | "geistFont"
   | "lastUpdated"
 >;
 
@@ -99,6 +103,7 @@ export const selectSyncState = (state: FolderStore): SyncState => ({
   spotifyTokenExpiry: state.spotifyTokenExpiry,
   spotifyTokenTimestamp: state.spotifyTokenTimestamp,
   theme: state.theme,
+  geistFont: state.geistFont,
   lastUpdated: state.lastUpdated,
 });
 
@@ -338,6 +343,7 @@ export const useFolderStore = create<FolderStore>()(
       spotifyTokenExpiry: null,
       spotifyTokenTimestamp: null,
       theme: "industrial",
+      geistFont: "sans",
       lastUpdated: 0,
 
       createFolder: (name, parentId) => {
@@ -646,6 +652,11 @@ export const useFolderStore = create<FolderStore>()(
       setTheme: (theme) => {
         if (!isValidTheme(theme)) return;
         set({ theme, lastUpdated: Date.now() });
+      },
+
+      setGeistFont: (font) => {
+        if (!isValidGeistFont(font)) return;
+        set({ geistFont: font, lastUpdated: Date.now() });
       },
       setFolderViewMode: (id, mode) => {
         if (!isValidViewMode(mode)) return;
