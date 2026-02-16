@@ -131,16 +131,16 @@ const FolderItem = React.memo(function FolderItem({
   };
 
   const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
     e.stopPropagation();
 
-    const { draggedFolder, draggedAlbum } = useFolderStore.getState();
+    const { draggedFolder, draggedAlbum, draggedFolderId } = useFolderStore.getState();
 
     // If dragging a folder
     if (draggedFolder) {
       // Don't allow dropping on itself
       if (draggedFolder.id === folder.id) return;
 
+      e.preventDefault();
       const rect = e.currentTarget.getBoundingClientRect();
       const y = e.clientY - rect.top;
       const height = rect.height;
@@ -162,8 +162,13 @@ const FolderItem = React.memo(function FolderItem({
       if (!isDragOver) setIsDragOver(true);
       e.dataTransfer.dropEffect = "move";
     } else if (draggedAlbum) {
-      if (!isDragOver) setIsDragOver(true);
-      e.dataTransfer.dropEffect = "move";
+      // Only allow dropping if it's a different folder
+      if (draggedFolderId !== folder.id) {
+        e.preventDefault();
+        if (dropPosition !== "inside") setDropPosition("inside");
+        if (!isDragOver) setIsDragOver(true);
+        e.dataTransfer.dropEffect = "move";
+      }
     }
   };
 

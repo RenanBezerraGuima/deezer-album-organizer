@@ -58,6 +58,7 @@ const SearchResultItem = React.memo(function SearchResultItem({
       <img
         src={album.imageUrl || "/placeholder.svg"}
         alt={`${album.name} by ${album.artist}`}
+        draggable="false"
         loading="lazy"
         decoding="async"
         className="w-12 h-12 border border-border object-cover shrink-0 bg-muted"
