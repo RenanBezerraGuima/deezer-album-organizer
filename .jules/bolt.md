@@ -37,3 +37,7 @@
 ## 2026-04-10 - [Reducing Search Input Re-rendering Overhead]
 **Learning:** In components with high-frequency state updates (like a search input's `query`), the entire render tree reconciles on every keystroke. Mapping over search results and performing string operations (like key concatenation and case normalization) for each item adds measurable overhead. Extracting the results list into a memoized component and pre-calculating match keys when results arrive eliminates this redundancy. Additionally, using a `Set` for membership checks is more efficient than a `Map` when only existence is needed.
 **Action:** Extract large list maps into memoized sub-components. Pre-calculate search metadata using `useMemo` to keep the render loop lean. Prefer `Set` for O(1) existence checks.
+
+## 2026-04-15 - [Eliminating Redundant Re-renders in Static Dialogs]
+**Learning:** Components that are always mounted (like global settings dialogs) but subscribe to large, frequently-changing state slices (like the entire `folders` tree) suffer from constant redundant re-renders even when the dialog is closed. Accessing these large slices ONLY inside event handlers via `getState()` eliminates the subscription entirely. Combining this with `React.memo` and `useShallow` for the remaining small reactive pieces ensures the component only reconciles when absolutely necessary.
+**Action:** For always-mounted components, use `getState()` for data needed only in callbacks. Use `React.memo` and `useShallow` to prune reactive updates.

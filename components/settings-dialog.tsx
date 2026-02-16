@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, memo } from 'react';
 import { Download, Upload, Settings, Music, Radio, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useShallow } from 'zustand/react/shallow';
 import { redirectToSpotifyAuth } from '@/lib/spotify-auth';
 import {
   Dialog,
@@ -16,16 +17,27 @@ import { Button } from '@/components/ui/button';
 import { useFolderStore } from '@/lib/store';
 import { Theme } from '@/lib/types';
 
-export function SettingsDialog() {
-  const folders = useFolderStore((state) => state.folders);
-  const importFolders = useFolderStore((state) => state.importFolders);
-  const streamingProvider = useFolderStore((state) => state.streamingProvider);
-  const setStreamingProvider = useFolderStore((state) => state.setStreamingProvider);
-  const theme = useFolderStore((state) => state.theme);
-  const setTheme = useFolderStore((state) => state.setTheme);
-  const spotifyToken = useFolderStore((state) => state.spotifyToken);
-  const spotifyTokenExpiry = useFolderStore((state) => state.spotifyTokenExpiry);
-  const spotifyTokenTimestamp = useFolderStore((state) => state.spotifyTokenTimestamp);
+export const SettingsDialog = memo(function SettingsDialog() {
+  /**
+   * Performance: Granular subscriptions and useShallow prevent the SettingsDialog
+   * from re-rendering whenever the entire folder tree changes (e.g., adding an album).
+   * Since this component is always mounted in the sidebar/header, this significantly
+   * reduces redundant React reconciliation cycles.
+   */
+  const {
+    streamingProvider,
+    theme,
+    spotifyToken,
+    spotifyTokenExpiry,
+    spotifyTokenTimestamp
+  } = useFolderStore(useShallow((state) => ({
+    streamingProvider: state.streamingProvider,
+    theme: state.theme,
+    spotifyToken: state.spotifyToken,
+    spotifyTokenExpiry: state.spotifyTokenExpiry,
+    spotifyTokenTimestamp: state.spotifyTokenTimestamp,
+  })));
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isSpotifyConnected = React.useMemo(() => {
@@ -34,8 +46,14 @@ export function SettingsDialog() {
     return now < spotifyTokenTimestamp + (spotifyTokenExpiry * 1000);
   }, [spotifyToken, spotifyTokenExpiry, spotifyTokenTimestamp]);
 
+  /**
+   * Performance: Accessing large state slices (like 'folders') only inside event handlers
+   * using getState() instead of subscribing to them prevents re-rendering the component
+   * on every change to that state.
+   */
   const handleExport = () => {
     try {
+      const { folders } = useFolderStore.getState();
       const data = JSON.stringify(folders, null, 2);
       const blob = new Blob([data], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -64,7 +82,7 @@ export function SettingsDialog() {
           throw new Error('Invalid format: Expected an array of collections');
         }
 
-        importFolders(json);
+        useFolderStore.getState().importFolders(json);
 
         // Reset file input
         if (fileInputRef.current) {
@@ -110,7 +128,7 @@ export function SettingsDialog() {
                     key={t}
                     variant={theme === t ? 'default' : 'outline'}
                     className="justify-start gap-2 rounded-none h-12 relative overflow-hidden group"
-                    onClick={() => setTheme(t)}
+                    onClick={() => useFolderStore.getState().setTheme(t)}
                   >
                     <span className="relative z-10 text-[10px] font-bold uppercase tracking-widest">{t}</span>
                     {theme === t && (
@@ -131,7 +149,7 @@ export function SettingsDialog() {
                   <Button
                     variant={streamingProvider === 'deezer' ? 'default' : 'outline'}
                     className="justify-start gap-2 rounded-none"
-                    onClick={() => setStreamingProvider('deezer')}
+                    onClick={() => useFolderStore.getState().setStreamingProvider('deezer')}
                   >
                     <Radio className="h-4 w-4" />
                     Deezer
@@ -139,7 +157,7 @@ export function SettingsDialog() {
                   <Button
                     variant={streamingProvider === 'apple' ? 'default' : 'outline'}
                     className="justify-start gap-2 rounded-none"
-                    onClick={() => setStreamingProvider('apple')}
+                    onClick={() => useFolderStore.getState().setStreamingProvider('apple')}
                   >
                     <Music className="h-4 w-4" />
                     Apple Music
@@ -149,7 +167,7 @@ export function SettingsDialog() {
                   <Button
                     variant={streamingProvider === 'spotify' ? 'default' : 'outline'}
                     className="w-full justify-start gap-2 rounded-none"
-                    onClick={() => setStreamingProvider('spotify')}
+                    onClick={() => useFolderStore.getState().setStreamingProvider('spotify')}
                   >
                     <div className="flex items-center gap-2 flex-1">
                       <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg">
@@ -226,4 +244,4 @@ export function SettingsDialog() {
       </DialogContent>
     </Dialog>
   );
-}
+});
