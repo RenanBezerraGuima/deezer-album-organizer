@@ -1,14 +1,17 @@
 import { test, expect, devices } from '@playwright/test';
 
-test.describe('Mobile Experience Refined Layout', () => {
-    test.use({ ...devices['iPhone 12 Pro'] });
+test.use({ ...devices['iPhone 12 Pro'] });
 
+test.describe('Mobile Experience Refined Layout', () => {
     test('should have header at top and search bar at bottom', async ({ page }) => {
         await page.goto('./');
         // Handle First Time Setup if visible
         const deezerBtn = page.getByRole('button', { name: 'Deezer' });
-        if (await deezerBtn.isVisible()) {
+        try {
+            await deezerBtn.waitFor({ state: 'visible', timeout: 5000 });
             await deezerBtn.click();
+        } catch (e) {
+            // Setup might already be done or button not visible
         }
 
         // Check Header
@@ -36,8 +39,11 @@ test.describe('Mobile Experience Refined Layout', () => {
         await page.goto('./');
         // Handle First Time Setup
         const deezerBtn = page.getByRole('button', { name: 'Deezer' });
-        if (await deezerBtn.isVisible()) {
+        try {
+            await deezerBtn.waitFor({ state: 'visible', timeout: 5000 });
             await deezerBtn.click();
+        } catch (e) {
+            // Setup might already be done
         }
 
         // Click settings in header

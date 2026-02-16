@@ -364,7 +364,7 @@ export function AlbumSearch({ isMobile, onMenuClick }: AlbumSearchProps) {
           />
           <Input
             ref={inputRef}
-            placeholder={isMobile ? "SEARCH..." : `SEARCH ON ${streamingProvider.toUpperCase()} [/]...`}
+            placeholder={isMobile ? "SEARCH..." : `SEARCH ALBUMS ON ${streamingProvider.toUpperCase()} [/]...`}
             value={query}
             onChange={handleSearchChange}
             onFocus={handleFocus}
