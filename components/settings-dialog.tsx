@@ -21,10 +21,10 @@ export const SettingsDialog = memo(function SettingsDialog() {
   /**
    * Performance: Granular subscriptions and useShallow prevent the SettingsDialog
    * from re-rendering whenever the entire folder tree changes (e.g., adding an album).
-   * Since this component is always mounted in the sidebar/header, this significantly
-   * reduces redundant React reconciliation cycles.
    */
   const {
+    isOpen,
+    setIsOpen,
     streamingProvider,
     theme,
     geistFont,
@@ -32,6 +32,8 @@ export const SettingsDialog = memo(function SettingsDialog() {
     spotifyTokenExpiry,
     spotifyTokenTimestamp
   } = useFolderStore(useShallow((state) => ({
+    isOpen: state.isSettingsOpen,
+    setIsOpen: state.setSettingsOpen,
     streamingProvider: state.streamingProvider,
     theme: state.theme,
     geistFont: state.geistFont,
@@ -98,18 +100,7 @@ export const SettingsDialog = memo(function SettingsDialog() {
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button
-          size="icon"
-          variant="ghost"
-          className="rounded-none border-border"
-          title="Settings"
-          aria-label="Settings"
-        >
-          <Settings className="h-4 w-4" />
-        </Button>
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-[425px] w-[95vw] max-h-[90dvh] p-0 overflow-hidden flex flex-col">
         <div className="p-6 overflow-y-auto">
           <DialogHeader>
