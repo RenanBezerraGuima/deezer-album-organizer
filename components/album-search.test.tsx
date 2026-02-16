@@ -54,7 +54,7 @@ describe('AlbumSearch top panel layout', () => {
 
     render(<AlbumSearch />);
 
-    const input = screen.getByPlaceholderText(/SEARCH ON DEEZER/i);
+    const input = screen.getByPlaceholderText(/SEARCH.*ON DEEZER/i);
     fireEvent.change(input, { target: { value: 'Test' } });
 
     // Wait for the result to appear
