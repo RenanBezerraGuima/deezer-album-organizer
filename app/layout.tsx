@@ -46,7 +46,18 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`
+        ${GeistSans.variable}
+        ${GeistMono.variable}
+        ${GeistPixelSquare.variable}
+        ${GeistPixelGrid.variable}
+        ${GeistPixelCircle.variable}
+        ${GeistPixelLine.variable}
+      `}
+    >
       <body className={`
         ${syne.variable}
         ${fraunces.variable}
@@ -54,12 +65,6 @@ export default function RootLayout({
         ${cormorant.variable}
         ${jetbrains.variable}
         ${hanken.variable}
-        ${GeistSans.variable}
-        ${GeistMono.variable}
-        ${GeistPixelSquare.variable}
-        ${GeistPixelGrid.variable}
-        ${GeistPixelCircle.variable}
-        ${GeistPixelLine.variable}
         antialiased
       `}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>

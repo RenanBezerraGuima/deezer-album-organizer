@@ -14,7 +14,7 @@ export function ThemeHandler() {
   }, [theme]);
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-geist-font', geistFont);
+    document.body.setAttribute('data-geist-font', geistFont);
   }, [geistFont]);
 
   return null;
