@@ -1,5 +1,5 @@
-export type Theme = 'industrial' | 'editorial' | 'glitch' | 'organic' | 'refined';
-export const THEMES: Theme[] = ['industrial', 'editorial', 'glitch', 'organic', 'refined'];
+export type Theme = 'industrial' | 'editorial' | 'glitch' | 'organic' | 'refined' | 'mint';
+export const THEMES: Theme[] = ['industrial', 'editorial', 'glitch', 'organic', 'refined', 'mint'];
 
 export type AlbumViewMode = 'grid' | 'canvas';
 export const VIEW_MODES: AlbumViewMode[] = ['grid', 'canvas'];
