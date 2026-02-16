@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   ChevronRight,
   ChevronDown,
@@ -56,6 +56,27 @@ const FolderItem = React.memo(function FolderItem({
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(folder.name);
   const [isCreatingSubfolder, setIsCreatingSubfolder] = useState(false);
+
+  const subfolderInputRef = useRef<HTMLInputElement>(null);
+  const editInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isCreatingSubfolder) {
+      const timer = setTimeout(() => {
+        subfolderInputRef.current?.focus();
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [isCreatingSubfolder]);
+
+  useEffect(() => {
+    if (isEditing) {
+      const timer = setTimeout(() => {
+        editInputRef.current?.focus();
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [isEditing]);
   const [newSubfolderName, setNewSubfolderName] = useState("");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -258,6 +279,7 @@ const FolderItem = React.memo(function FolderItem({
               >
                 <div className="relative flex-1 min-w-0">
                   <Input
+                    ref={editInputRef}
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
                     className="h-6 text-sm py-0 pr-12 flex-1 min-w-0 rounded-none border-border"
@@ -444,6 +466,7 @@ const FolderItem = React.memo(function FolderItem({
               <Folder className="h-4 w-4 text-accent shrink-0" />
               <div className="relative flex-1 min-w-0">
                 <Input
+                  ref={subfolderInputRef}
                   value={newSubfolderName}
                   onChange={(e) => setNewSubfolderName(e.target.value)}
                   placeholder="Sub-collection name"
@@ -506,6 +529,17 @@ const FolderItem = React.memo(function FolderItem({
 export function FolderTree() {
   const [isCreating, setIsCreating] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
+
+  const createInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isCreating) {
+      const timer = setTimeout(() => {
+        createInputRef.current?.focus();
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [isCreating]);
   const [isDragOver, setIsDragOver] = useState(false);
 
   // Granular subscriptions for data used in render.
@@ -577,6 +611,7 @@ export function FolderTree() {
               <Folder className="h-4 w-4 text-accent shrink-0 ml-5" />
               <div className="relative flex-1 min-w-0">
                 <Input
+                  ref={createInputRef}
                   value={newFolderName}
                   onChange={(e) => setNewFolderName(e.target.value)}
                   placeholder="Collection name"
