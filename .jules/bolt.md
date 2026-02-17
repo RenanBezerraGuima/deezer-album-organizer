@@ -41,3 +41,7 @@
 ## 2026-04-15 - [Eliminating Redundant Re-renders in Static Dialogs]
 **Learning:** Components that are always mounted (like global settings dialogs) but subscribe to large, frequently-changing state slices (like the entire `folders` tree) suffer from constant redundant re-renders even when the dialog is closed. Accessing these large slices ONLY inside event handlers via `getState()` eliminates the subscription entirely. Combining this with `React.memo` and `useShallow` for the remaining small reactive pieces ensures the component only reconciles when absolutely necessary.
 **Action:** For always-mounted components, use `getState()` for data needed only in callbacks. Use `React.memo` and `useShallow` to prune reactive updates.
+
+## 2026-04-20 - [Optimizing Canvas Panning with Stable Handlers and Memoization]
+**Learning:** In interactive canvas views, updating screen-space positions during pan/zoom triggers re-renders of the entire item list. While `AlbumCard` might be memoized, the parent container's reconciliation still happens every frame. Extracting the item wrapper into a `memo` component and using truly stable event handlers (stabilized by `useRef` or by pruning dependencies from `useCallback`) allows React to skip reconciliation for almost all items during high-frequency movement.
+**Action:** Use memoized item wrappers in lists/grids. Stabilize handlers by accessing state via `ref` or `getState()` to avoid dependency changes.
