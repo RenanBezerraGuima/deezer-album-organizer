@@ -1,5 +1,5 @@
-export type Theme = 'industrial' | 'editorial' | 'glitch' | 'organic' | 'refined' | 'mint';
-export const THEMES: Theme[] = ['industrial', 'editorial', 'glitch', 'organic', 'refined', 'mint'];
+export type Theme = 'industrial' | 'editorial' | 'organic' | 'refined' | 'mint';
+export const THEMES: Theme[] = ['industrial', 'editorial', 'organic', 'refined', 'mint'];
 
 export type GeistFont = 'mono';
 export const GEIST_FONTS: GeistFont[] = ['mono'];

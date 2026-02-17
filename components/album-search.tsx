@@ -66,13 +66,13 @@ const SearchResultItem = React.memo(function SearchResultItem({
       />
       <div className="flex-1 min-w-0 overflow-hidden">
         <p
-          className="text-sm font-medium truncate uppercase tracking-tighter"
+          className="text-sm font-medium truncate tracking-tighter"
           style={{ fontFamily: 'var(--font-display)' }}
         >
           {album.name}
         </p>
         <div className="flex items-center gap-2">
-          <p className="text-xs opacity-80 truncate uppercase" style={{ fontFamily: 'var(--font-mono)' }}>
+          <p className="text-xs opacity-80 truncate" style={{ fontFamily: 'var(--font-mono)' }}>
             {album.artist}
             {album.releaseDate && ` • ${album.releaseDate.slice(0, 4)}`}
           </p>
@@ -365,13 +365,13 @@ export function AlbumSearch({ isMobile, onMenuClick }: AlbumSearchProps) {
           />
           <Input
             ref={inputRef}
-            placeholder={isMobile ? "SEARCH..." : `SEARCH ALBUMS ON ${streamingProvider.toUpperCase()} [/]...`}
+            placeholder={isMobile ? "Search..." : `Search albums on ${streamingProvider.toUpperCase()} [/]...`}
             value={query}
             onChange={handleSearchChange}
             onFocus={handleFocus}
             onKeyDown={handleKeyDown}
             className={cn(
-              "pl-12 pr-26 h-12 w-full bg-background border-2 border-border focus:ring-0 focus:border-primary focus:brutalist-shadow transition-all uppercase tracking-tighter",
+              "pl-12 pr-26 h-12 w-full bg-background border-2 border-border focus:ring-0 focus:border-primary focus:brutalist-shadow transition-all tracking-tighter",
               isMobile ? "text-base" : "text-lg"
             )}
             style={{ borderRadius: 'var(--radius)', fontFamily: 'var(--font-mono)' }}
@@ -415,20 +415,20 @@ export function AlbumSearch({ isMobile, onMenuClick }: AlbumSearchProps) {
               <div className="p-2 space-y-1" role="listbox" id={listboxId}>
                 {results.length > 0 && (
                   <div className="px-3 py-1.5 mb-1 border-b border-border/50">
-                    <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground/70" style={{ fontFamily: 'var(--font-mono)' }}>
-                      {results.length} RESULTS FOUND
+                    <p className="text-[10px] font-medium tracking-widest text-muted-foreground/70" style={{ fontFamily: 'var(--font-mono)' }}>
+                      {results.length} results found
                     </p>
                   </div>
                 )}
                 {error && (
                   <div className="py-6 px-4 text-center space-y-4">
-                    <p className="text-sm text-destructive uppercase" style={{ fontFamily: 'var(--font-mono)' }}>
+                    <p className="text-sm text-destructive" style={{ fontFamily: 'var(--font-mono)' }}>
                       {error}
                     </p>
                     {streamingProvider === 'spotify' && isSpotifyTokenExpired && (
                       <button
                         onClick={() => redirectToSpotifyAuth()}
-                        className="inline-block bg-[#1DB954] text-white px-6 py-2 font-medium uppercase tracking-tighter hover:brutalist-shadow transition-all cursor-pointer"
+                        className="inline-block bg-[#1DB954] text-white px-6 py-2 font-medium tracking-tighter hover:brutalist-shadow transition-all cursor-pointer"
                       >
                         Connect Spotify
                       </button>
@@ -438,7 +438,7 @@ export function AlbumSearch({ isMobile, onMenuClick }: AlbumSearchProps) {
 
                 {results.length === 0 && !error && query.trim() && !isLoading && (
                   <div className="py-8 px-4 text-center">
-                    <p className="text-sm text-muted-foreground uppercase" style={{ fontFamily: 'var(--font-mono)' }}>
+                    <p className="text-sm text-muted-foreground" style={{ fontFamily: 'var(--font-mono)' }}>
                       No albums found for "{query}"
                     </p>
                   </div>
@@ -458,7 +458,7 @@ export function AlbumSearch({ isMobile, onMenuClick }: AlbumSearchProps) {
       </div>
 
       {!selectedFolderId && query && (
-        <p className="text-xs text-primary font-mono mt-2 text-center uppercase tracking-tighter">
+        <p className="text-xs text-primary font-mono mt-2 text-center tracking-tighter">
           Select a collection to add albums
         </p>
       )}

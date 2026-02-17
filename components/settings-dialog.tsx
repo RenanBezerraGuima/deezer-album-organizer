@@ -112,18 +112,18 @@ export const SettingsDialog = memo(function SettingsDialog() {
 
           <div className="grid gap-6 py-4">
             <div className="space-y-4">
-              <h4 className="text-sm font-medium uppercase tracking-tight border-b-2 border-border pb-1">
-                Design Iteration
+              <h4 className="text-sm font-medium tracking-tight border-b-2 border-border pb-1">
+                Design iteration
               </h4>
               <div className="grid grid-cols-2 gap-2">
-                {(['industrial', 'editorial', 'glitch', 'organic', 'refined', 'mint'] as Theme[]).map((t) => (
+                {(['industrial', 'editorial', 'organic', 'refined', 'mint'] as Theme[]).map((t) => (
                   <Button
                     key={t}
                     variant={theme === t ? 'default' : 'outline'}
                     className="justify-start gap-2 rounded-none h-12 relative overflow-hidden group"
                     onClick={() => useFolderStore.getState().setTheme(t)}
                   >
-                    <span className="relative z-10 text-[10px] font-medium uppercase tracking-widest">{t}</span>
+                    <span className="relative z-10 text-[10px] font-medium tracking-widest capitalize">{t}</span>
                     {theme === t && (
                       <div className="absolute inset-0 bg-primary/20 animate-pulse" />
                     )}
@@ -135,8 +135,8 @@ export const SettingsDialog = memo(function SettingsDialog() {
 
 
             <div className="space-y-4">
-              <h4 className="text-sm font-medium uppercase tracking-tight border-b-2 border-border pb-1">
-                Streaming Provider
+              <h4 className="text-sm font-medium tracking-tight border-b-2 border-border pb-1">
+                Streaming provider
               </h4>
               <div className="grid grid-cols-1 gap-2">
                 <div className="grid grid-cols-2 gap-2">
@@ -172,7 +172,7 @@ export const SettingsDialog = memo(function SettingsDialog() {
                     {isSpotifyConnected && <CheckCircle2 className="h-3 w-3 text-lime-500" />}
                   </Button>
                   {streamingProvider === 'spotify' && !isSpotifyConnected && (
-                    <p className="text-[10px] font-mono mt-1 uppercase text-destructive">
+                    <p className="text-[10px] font-mono mt-1 text-destructive">
                       Not connected. <button onClick={() => redirectToSpotifyAuth()} className="underline hover:text-primary cursor-pointer">Connect now</button>
                     </p>
                   )}
@@ -181,13 +181,13 @@ export const SettingsDialog = memo(function SettingsDialog() {
             </div>
 
             <div className="space-y-4">
-              <h4 className="text-sm font-medium uppercase tracking-tight border-b-2 border-border pb-1">
-                Data Management
+              <h4 className="text-sm font-medium tracking-tight border-b-2 border-border pb-1">
+                Data management
               </h4>
 
               <div className="grid grid-cols-1 gap-4">
                 <div className="space-y-2">
-                  <p className="text-xs font-mono uppercase text-muted-foreground">
+                  <p className="text-xs font-mono text-muted-foreground">
                     Export your collections and albums to a JSON file for backup.
                   </p>
                   <Button
@@ -201,7 +201,7 @@ export const SettingsDialog = memo(function SettingsDialog() {
                 </div>
 
                 <div className="space-y-2">
-                  <p className="text-xs font-mono uppercase text-muted-foreground">
+                  <p className="text-xs font-mono text-muted-foreground">
                     Import data from a backup file. Existing collections with the same name will be kept and renamed.
                   </p>
                   <Button
@@ -224,10 +224,10 @@ export const SettingsDialog = memo(function SettingsDialog() {
             </div>
 
             <div className="space-y-2 opacity-50">
-              <h4 className="text-sm font-medium uppercase tracking-tight border-b-2 border-border pb-1">
+              <h4 className="text-sm font-medium tracking-tight border-b-2 border-border pb-1">
                 About
               </h4>
-              <p className="text-[10px] font-mono uppercase">
+              <p className="text-[10px] font-mono">
                 AlbumShelf v0.1.0
                 <br />
                 Local-first storage
