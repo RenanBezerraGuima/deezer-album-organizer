@@ -2,30 +2,8 @@ import React from "react"
 import type { Metadata } from 'next'
 import { ThemeProvider } from '@/components/theme-provider'
 import { ThemeHandler } from '@/components/theme-handler'
-import {
-  Syne,
-  Fraunces,
-  Bricolage_Grotesque,
-  Cormorant_Garamond,
-  JetBrains_Mono,
-  Hanken_Grotesk
-} from 'next/font/google'
-import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
-import {
-  GeistPixelSquare,
-  GeistPixelGrid,
-  GeistPixelCircle,
-  GeistPixelLine
-} from 'geist/font/pixel'
 import './globals.css'
-
-const syne = Syne({ subsets: ['latin'], variable: '--font-syne' })
-const fraunces = Fraunces({ subsets: ['latin'], variable: '--font-fraunces' })
-const bricolage = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-bricolage' })
-const cormorant = Cormorant_Garamond({ subsets: ['latin'], weight: ['300', '400', '500', '600', '700'], variable: '--font-cormorant' })
-const jetbrains = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains' })
-const hanken = Hanken_Grotesk({ subsets: ['latin'], variable: '--font-hanken' })
 
 export const metadata: Metadata = {
   title: 'AlbumShelf',
@@ -49,24 +27,9 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`
-        ${GeistSans.variable}
-        ${GeistMono.variable}
-        ${GeistPixelSquare.variable}
-        ${GeistPixelGrid.variable}
-        ${GeistPixelCircle.variable}
-        ${GeistPixelLine.variable}
-      `}
+      className={`${GeistMono.variable}`}
     >
-      <body className={`
-        ${syne.variable}
-        ${fraunces.variable}
-        ${bricolage.variable}
-        ${cormorant.variable}
-        ${jetbrains.variable}
-        ${hanken.variable}
-        antialiased
-      `}>
+      <body className="antialiased">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <ThemeHandler />
           {children}

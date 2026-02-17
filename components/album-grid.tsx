@@ -32,7 +32,7 @@ export function AlbumGrid({ isMobile }: { isMobile?: boolean }) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-muted-foreground uppercase tracking-tighter" style={{ fontFamily: 'var(--font-body)' }}>
         <Music className="h-16 w-16 mb-4 opacity-10" />
-        <p className="text-lg font-bold" style={{ fontFamily: 'var(--font-display)' }}>NO COLLECTION SELECTED</p>
+        <p className="text-lg font-medium" style={{ fontFamily: 'var(--font-display)' }}>NO COLLECTION SELECTED</p>
         <p className="text-xs mt-1" style={{ fontFamily: 'var(--font-mono)' }}>Select a catalog entry to begin</p>
       </div>
     );
@@ -93,7 +93,7 @@ export function AlbumGrid({ isMobile }: { isMobile?: boolean }) {
             {breadcrumb.map((name, index) => (
               <span key={index} className="flex items-center gap-2 shrink-0">
                 {index > 0 && <span>/</span>}
-                <span className={index === breadcrumb.length - 1 ? 'text-foreground font-black' : ''}>
+                <span className={index === breadcrumb.length - 1 ? 'text-foreground font-semibold' : ''}>
                   {name}
                 </span>
               </span>
@@ -121,7 +121,7 @@ export function AlbumGrid({ isMobile }: { isMobile?: boolean }) {
             </button>
           </div>
         </div>
-        <p className="text-[10px] uppercase tracking-widest text-primary font-bold" style={{ fontFamily: 'var(--font-body)' }}>
+        <p className="text-[10px] uppercase tracking-widest text-primary font-medium" style={{ fontFamily: 'var(--font-body)' }}>
           {selectedFolder.albums.length} ALBUM{selectedFolder.albums.length !== 1 ? 'S' : ''} // CATALOG DATA
         </p>
       </div>
@@ -129,13 +129,13 @@ export function AlbumGrid({ isMobile }: { isMobile?: boolean }) {
       {selectedFolder.albums.length === 0 ? (
         <div className="flex flex-col items-center justify-center flex-1 text-muted-foreground uppercase tracking-tighter" style={{ fontFamily: 'var(--font-body)' }}>
           <Music className="h-12 w-12 mb-3 opacity-20" />
-          <p className="text-sm font-bold" style={{ fontFamily: 'var(--font-display)' }}>COLLECTION EMPTY</p>
+          <p className="text-sm font-medium" style={{ fontFamily: 'var(--font-display)' }}>COLLECTION EMPTY</p>
           <p className="text-[10px] mt-1 mb-4" style={{ fontFamily: 'var(--font-mono)' }}>Add albums via search interface</p>
           <Button
             variant="outline"
             size="sm"
             onClick={() => window.dispatchEvent(new CustomEvent('albumshelf:focus-search'))}
-            className="gap-2 rounded-none border-2 border-dashed border-muted-foreground/50 hover:border-primary hover:text-primary transition-all uppercase tracking-tighter font-bold h-auto py-3 px-4"
+            className="gap-2 rounded-none border-2 border-dashed border-muted-foreground/50 hover:border-primary hover:text-primary transition-all uppercase tracking-tighter font-medium h-auto py-3 px-4"
           >
             <Search className="h-4 w-4" />
             Find your first album

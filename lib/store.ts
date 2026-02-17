@@ -8,7 +8,6 @@ import {
   isValidTheme,
   isValidViewMode,
   isValidStreamingProvider,
-  isValidGeistFont,
 } from "./security";
 import { createInitialAlbumPosition, normalizeAlbumPosition } from "./spatial";
 
@@ -343,7 +342,7 @@ export const useFolderStore = create<FolderStore>()(
       spotifyTokenExpiry: null,
       spotifyTokenTimestamp: null,
       theme: "industrial",
-      geistFont: "sans",
+      geistFont: "mono",
       lastUpdated: 0,
 
       createFolder: (name, parentId) => {
@@ -655,8 +654,7 @@ export const useFolderStore = create<FolderStore>()(
       },
 
       setGeistFont: (font) => {
-        if (!isValidGeistFont(font)) return;
-        set({ geistFont: font, lastUpdated: Date.now() });
+        set({ geistFont: "mono", lastUpdated: Date.now() });
       },
       setFolderViewMode: (id, mode) => {
         if (!isValidViewMode(mode)) return;

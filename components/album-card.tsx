@@ -119,14 +119,14 @@ export const AlbumCard = React.memo(function AlbumCard({ album, folderId }: Albu
       </div>
 
       <div className="p-3 bg-card uppercase tracking-tighter" style={{ fontFamily: 'var(--font-body)' }}>
-        <h3 className="font-black text-sm text-foreground truncate" title={album.name} style={{ fontFamily: 'var(--font-display)' }}>
+        <h3 className="font-medium text-sm text-foreground truncate" title={album.name} style={{ fontFamily: 'var(--font-display)' }}>
           {album.name}
         </h3>
         <p className="text-[10px] text-muted-foreground truncate mt-0.5" title={album.artist}>
           {album.artist}
         </p>
         <div className="flex items-center gap-1 mt-1 text-[10px] text-muted-foreground" style={{ fontFamily: 'var(--font-mono)' }}>
-          <span className="bg-foreground text-background px-1 font-bold">
+          <span className="bg-foreground text-background px-1 font-medium">
             {album.id.split('-')[0].toUpperCase()}
           </span>
           <span>|</span>

@@ -88,12 +88,6 @@ export function isValidTheme(theme: any): theme is Theme {
   return typeof theme === 'string' && THEMES.includes(theme as Theme);
 }
 
-/**
- * Validate if a string is a valid GeistFont.
- */
-export function isValidGeistFont(font: any): font is GeistFont {
-  return typeof font === 'string' && GEIST_FONTS.includes(font as GeistFont);
-}
 
 /**
  * Validate if a string is a valid AlbumViewMode.

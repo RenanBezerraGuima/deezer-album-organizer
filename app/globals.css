@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --font-geist: var(--font-geist-sans);
+  --font-geist: var(--font-geist-mono), ui-monospace, monospace;
   --background: oklch(0.98 0.01 200);
   --foreground: oklch(0.1 0 0);
   --card: oklch(1 0 0);
@@ -107,13 +107,13 @@
   }
   body {
     @apply bg-background text-foreground transition-colors duration-300;
-    font-family: var(--font-body);
+    font-family: var(--font-geist);
     background-image: var(--bg-pattern);
     background-size: var(--bg-size, 16px 16px);
     background-attachment: fixed;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-display);
+    font-family: var(--font-geist);
   }
 }
 
@@ -283,7 +283,7 @@
     @apply bg-background/80 backdrop-blur-sm border-2 border-border;
   }
   .text-gradient {
-    @apply text-foreground font-black uppercase tracking-tighter;
+    @apply text-foreground font-medium uppercase tracking-tighter;
   }
 }
 
@@ -294,12 +294,6 @@
   display: none !important;
 }
 
-[data-geist-font="sans"] { --font-geist: var(--font-geist-sans); }
-[data-geist-font="mono"] { --font-geist: var(--font-geist-mono); }
-[data-geist-font="pixel-square"] { --font-geist: var(--font-geist-pixel-square); }
-[data-geist-font="pixel-grid"] { --font-geist: var(--font-geist-pixel-grid); }
-[data-geist-font="pixel-circle"] { --font-geist: var(--font-geist-pixel-circle); }
-[data-geist-font="pixel-line"] { --font-geist: var(--font-geist-pixel-line); }
 
 .theme-mint {
   --font-display: var(--font-geist);
@@ -309,7 +303,7 @@
   --foreground: oklch(0 0 0);
   --primary: oklch(0.81 0.05 166);
   --accent: oklch(0.96 0.04 155);
-  --border: oklch(0 0 0);
+  --border: var(--primary);
   --radius: 0.5rem;
   --shadow-offset: 4px;
   --shadow-offset-sm: 2px;
