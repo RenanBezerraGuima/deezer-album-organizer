@@ -118,7 +118,7 @@ export const AlbumCard = React.memo(function AlbumCard({ album, folderId }: Albu
         </Button>
       </div>
 
-      <div className="p-3 bg-card uppercase tracking-tighter" style={{ fontFamily: 'var(--font-body)' }}>
+      <div className="p-3 bg-card tracking-tighter" style={{ fontFamily: 'var(--font-body)' }}>
         <h3 className="font-medium text-sm text-foreground truncate" title={album.name} style={{ fontFamily: 'var(--font-display)' }}>
           {album.name}
         </h3>
@@ -136,7 +136,7 @@ export const AlbumCard = React.memo(function AlbumCard({ album, folderId }: Albu
               <span>|</span>
             </>
           )}
-          <span>{album.totalTracks} TRACKS</span>
+          <span>{album.totalTracks} tracks</span>
         </div>
       </div>
     </div>

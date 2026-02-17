@@ -7,7 +7,6 @@ describe('Security Validation', () => {
     it('should return true for valid themes', () => {
       expect(isValidTheme('industrial')).toBe(true);
       expect(isValidTheme('editorial')).toBe(true);
-      expect(isValidTheme('glitch')).toBe(true);
     });
 
     it('should return false for invalid themes', () => {

@@ -163,41 +163,6 @@
   @apply bg-white/5;
 }
 
-.theme-glitch {
-  --font-display: var(--font-geist);
-  --font-body: var(--font-geist);
-  --font-mono: var(--font-geist);
-  --background: oklch(0.95 0.01 0);
-  --foreground: oklch(0.1 0 0);
-  --primary: oklch(0.6 0.3 330);
-  --accent: oklch(0.5 0.2 190);
-  --border: oklch(0.8 0 0);
-  --radius: 0rem;
-  --shadow-offset: 4px;
-  --shadow-offset-sm: 2px;
-  --shadow-color: var(--primary);
-  --bg-pattern: linear-gradient(rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.05) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-  --bg-size: 100% 2px, 3px 100%;
-}
-
-.dark .theme-glitch {
-  --background: oklch(0.1 0 0);
-  --foreground: oklch(0.9 0 0);
-  --primary: oklch(0.7 0.3 330);
-  --accent: oklch(0.8 0.2 190);
-  --border: oklch(0.3 0 0);
-  --bg-pattern: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-}
-
-.theme-glitch .bg-card {
-  @apply bg-background/40 backdrop-blur-md border-primary/50;
-  box-shadow: 0 0 15px var(--primary);
-}
-
-.theme-glitch h1, .theme-glitch h2, .theme-glitch h3 {
-  text-shadow: 2px 0 oklch(0.6 0.2 20), -2px 0 oklch(0.6 0.2 200);
-}
-
 .theme-organic {
   --font-display: var(--font-geist);
   --font-body: var(--font-geist);
@@ -277,13 +242,13 @@
   }
   .text-technical {
     font-family: var(--font-mono);
-    @apply uppercase tracking-tighter;
+    @apply tracking-tighter;
   }
   .glass {
     @apply bg-background/80 backdrop-blur-sm border-2 border-border;
   }
   .text-gradient {
-    @apply text-foreground font-medium uppercase tracking-tighter;
+    @apply text-foreground font-medium tracking-tighter;
   }
 }
 

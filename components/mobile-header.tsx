@@ -24,8 +24,8 @@ export function MobileHeader({ onMenuClick }: MobileHeaderProps) {
                 </Button>
             </div>
 
-            <h1 className="text-xl font-semibold uppercase tracking-tighter" style={{ fontFamily: 'var(--font-display)' }}>
-                ALBUMSHELF
+            <h1 className="text-xl font-semibold tracking-tighter" style={{ fontFamily: 'var(--font-display)' }}>
+                AlbumShelf
             </h1>
 
             <div className="flex items-center gap-2">
