@@ -13,6 +13,7 @@ import {
   X,
   GripVertical,
   Settings,
+  MoreVertical,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -253,7 +254,11 @@ const FolderItem = React.memo(function FolderItem({
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
           >
-            <GripVertical className="h-3 w-3 opacity-0 group-hover:opacity-100 cursor-grab shrink-0" />
+            <GripVertical
+              className="h-3 w-3 opacity-0 group-hover:opacity-100 cursor-grab shrink-0"
+              aria-label="Drag to reorder"
+              title="Drag to reorder"
+            />
 
             <button
               onClick={handleToggle}
@@ -261,6 +266,7 @@ const FolderItem = React.memo(function FolderItem({
                 "p-0.5 rounded-none hover:bg-black/10 dark:hover:bg-white/10 transition-colors shrink-0",
                 !hasSubfolders && "invisible",
               )}
+              tabIndex={!hasSubfolders ? -1 : undefined}
               aria-label={
                 folder.isExpanded ? "Collapse collection" : "Expand collection"
               }
@@ -299,7 +305,7 @@ const FolderItem = React.memo(function FolderItem({
                       if (e.key === "Escape") setIsEditing(false);
                     }}
                   />
-                  <div id={`rename-counter-${folder.id}`} className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-mono text-muted-foreground pointer-events-none select-none uppercase" aria-live="polite">
+                  <div id={`rename-counter-${folder.id}`} className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-mono text-muted-foreground pointer-events-none select-none uppercase" aria-hidden="true">
                     {editName.length}/100
                   </div>
                 </div>
@@ -342,16 +348,7 @@ const FolderItem = React.memo(function FolderItem({
                       aria-label="Collection actions"
                       title="Collection actions"
                     >
-                      <svg
-                        className="h-4 w-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle cx="12" cy="12" r="1" />
-                        <circle cx="12" cy="5" r="1" />
-                        <circle cx="12" cy="19" r="1" />
-                      </svg>
+                      <MoreVertical className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
@@ -490,7 +487,7 @@ const FolderItem = React.memo(function FolderItem({
                     }
                   }}
                 />
-                <div id={`subfolder-counter-${folder.id}`} className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-mono text-muted-foreground pointer-events-none select-none uppercase" aria-live="polite">
+                <div id={`subfolder-counter-${folder.id}`} className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-mono text-muted-foreground pointer-events-none select-none uppercase" aria-hidden="true">
                   {newSubfolderName.length}/100
                 </div>
               </div>
@@ -644,7 +641,7 @@ export function FolderTree() {
                     }
                   }}
                 />
-                <div id="root-folder-counter" className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-mono text-muted-foreground pointer-events-none select-none uppercase" aria-live="polite">
+                <div id="root-folder-counter" className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-mono text-muted-foreground pointer-events-none select-none uppercase" aria-hidden="true">
                   {newFolderName.length}/100
                 </div>
               </div>

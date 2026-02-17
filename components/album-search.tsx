@@ -384,7 +384,10 @@ export function AlbumSearch({ isMobile, onMenuClick }: AlbumSearchProps) {
             role="combobox"
           />
           {query.length > 0 && (
-            <div className="absolute right-10 top-1/2 -translate-y-1/2 text-[9px] font-mono text-muted-foreground opacity-50 uppercase tracking-widest animate-in fade-in duration-300 select-none pointer-events-none">
+            <div
+              className="absolute right-10 top-1/2 -translate-y-1/2 text-[9px] font-mono text-muted-foreground opacity-50 uppercase tracking-widest animate-in fade-in duration-300 select-none pointer-events-none"
+              aria-hidden="true"
+            >
               {query.length}/{200}
             </div>
           )}
