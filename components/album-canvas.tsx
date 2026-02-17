@@ -1,7 +1,7 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
-import type { Album } from '@/lib/types';
+import React, { useMemo, useRef, useState, useCallback, useEffect } from 'react';
+import type { Album, AlbumPosition } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { AlbumCard } from './album-card';
 import {
@@ -19,16 +19,74 @@ interface AlbumCanvasProps {
   folderId: string;
 }
 
+/**
+ * Performance: Memoized item component prevents re-rendering all albums during canvas panning.
+ * Since panning only updates the parent "stage" transform, the world positions of items
+ * remain stable. React skips reconciling these items if their props haven't changed.
+ */
+const AlbumCanvasItem = React.memo(function AlbumCanvasItem({
+  album,
+  folderId,
+  isDragging,
+  position,
+  onPointerDown,
+}: {
+  album: Album;
+  folderId: string;
+  isDragging: boolean;
+  position: AlbumPosition;
+  onPointerDown: (event: React.PointerEvent<HTMLDivElement>, album: Album) => void;
+}) {
+  const handleDragStart = useCallback((e: React.DragEvent) => {
+    useFolderStore.getState().setDraggedAlbum(album, folderId, null);
+    e.dataTransfer.setData('text/plain', album.id);
+    e.dataTransfer.effectAllowed = 'move';
+  }, [album, folderId]);
+
+  const handleDragEnd = useCallback(() => {
+    useFolderStore.getState().setDraggedAlbum(null, null, null);
+  }, []);
+
+  const handlePointerDown = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    onPointerDown(event, album);
+  }, [onPointerDown, album]);
+
+  return (
+    <div
+      data-album-card
+      draggable
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      className={cn('absolute pointer-events-auto', isDragging && 'z-50')}
+      style={{
+        left: position.x,
+        top: position.y,
+        width: DEFAULT_CARD_SIZE.width,
+      }}
+      onPointerDown={handlePointerDown}
+    >
+      <AlbumCard album={album} folderId={folderId} />
+    </div>
+  );
+});
+
 export function AlbumCanvas({ albums, folderId }: AlbumCanvasProps) {
   const setAlbumPosition = useFolderStore((state) => state.setAlbumPosition);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [camera, setCamera] = useState<CameraState>({ x: 48, y: 24, zoom: 1 });
+  const cameraRef = useRef<CameraState>(camera);
+
+  // Sync ref with state for use in stable handlers
+  useEffect(() => {
+    cameraRef.current = camera;
+  }, [camera]);
+
   const [isPanning, setIsPanning] = useState(false);
   const [draggedAlbum, setDraggedAlbum] = useState<{
     id: string;
-    initialPos: { x: number; y: number };
-    currentPos: { x: number; y: number };
+    initialPos: AlbumPosition;
+    currentPos: AlbumPosition;
   } | null>(null);
 
   const visibleAlbums = useMemo(() => {
@@ -51,7 +109,7 @@ export function AlbumCanvas({ albums, folderId }: AlbumCanvasProps) {
     });
   }, [albums, camera, draggedAlbum?.id]);
 
-  const startPan = (event: React.PointerEvent<HTMLDivElement>) => {
+  const startPan = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
     if ((event.target as HTMLElement).closest('[data-album-card]')) {
       return;
     }
@@ -59,12 +117,18 @@ export function AlbumCanvas({ albums, folderId }: AlbumCanvasProps) {
     setIsPanning(true);
     const startX = event.clientX;
     const startY = event.clientY;
-    const initialCamera = camera;
+
+    // Capture the camera state at the moment of interaction
+    const initialCamera = cameraRef.current;
 
     const move = (moveEvent: PointerEvent) => {
       const deltaX = moveEvent.clientX - startX;
       const deltaY = moveEvent.clientY - startY;
-      setCamera((prev) => ({ ...prev, x: initialCamera.x + deltaX, y: initialCamera.y + deltaY }));
+      setCamera({
+        ...initialCamera,
+        x: initialCamera.x + deltaX,
+        y: initialCamera.y + deltaY
+      });
     };
 
     const up = () => {
@@ -75,9 +139,9 @@ export function AlbumCanvas({ albums, folderId }: AlbumCanvasProps) {
 
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', up);
-  };
+  }, []); // Truly stable handler
 
-  const zoomCanvas = (event: React.WheelEvent<HTMLDivElement>) => {
+  const zoomCanvas = useCallback((event: React.WheelEvent<HTMLDivElement>) => {
     event.preventDefault();
     const containerBounds = containerRef.current?.getBoundingClientRect();
     if (!containerBounds) return;
@@ -87,8 +151,10 @@ export function AlbumCanvas({ albums, folderId }: AlbumCanvasProps) {
       y: event.clientY - containerBounds.top,
     };
 
-    const worldBeforeZoom = screenToWorld(cursor, camera);
-    const nextZoom = clampZoom(camera.zoom - event.deltaY * 0.001);
+    // Use latest camera from ref
+    const currentCamera = cameraRef.current;
+    const worldBeforeZoom = screenToWorld(cursor, currentCamera);
+    const nextZoom = clampZoom(currentCamera.zoom - event.deltaY * 0.001);
 
     const newCamera = {
       zoom: nextZoom,
@@ -97,27 +163,28 @@ export function AlbumCanvas({ albums, folderId }: AlbumCanvasProps) {
     };
 
     setCamera(newCamera);
-  };
+  }, []); // Truly stable handler
 
-  const startAlbumDrag = (event: React.PointerEvent<HTMLDivElement>, album: Album) => {
+  const startAlbumDrag = useCallback((event: React.PointerEvent<HTMLDivElement>, album: Album) => {
     event.stopPropagation();
 
     const startX = event.clientX;
     const startY = event.clientY;
     const initial = album.position ?? { x: 0, y: 0 };
+    const zoom = cameraRef.current.zoom;
 
     setDraggedAlbum({ id: album.id, initialPos: initial, currentPos: initial });
 
     const move = (moveEvent: PointerEvent) => {
-      const deltaX = (moveEvent.clientX - startX) / camera.zoom;
-      const deltaY = (moveEvent.clientY - startY) / camera.zoom;
+      const deltaX = (moveEvent.clientX - startX) / zoom;
+      const deltaY = (moveEvent.clientY - startY) / zoom;
       const newPos = { x: initial.x + deltaX, y: initial.y + deltaY };
       setDraggedAlbum((prev) => (prev ? { ...prev, currentPos: newPos } : null));
     };
 
     const up = (upEvent: PointerEvent) => {
-      const deltaX = (upEvent.clientX - startX) / camera.zoom;
-      const deltaY = (upEvent.clientY - startY) / camera.zoom;
+      const deltaX = (upEvent.clientX - startX) / zoom;
+      const deltaY = (upEvent.clientY - startY) / zoom;
       setAlbumPosition(folderId, album.id, initial.x + deltaX, initial.y + deltaY);
       setDraggedAlbum(null);
       window.removeEventListener('pointermove', move);
@@ -126,7 +193,7 @@ export function AlbumCanvas({ albums, folderId }: AlbumCanvasProps) {
 
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', up);
-  };
+  }, [folderId, setAlbumPosition]); // Stabilized by using cameraRef.current.zoom inside
 
   return (
     <div
@@ -151,28 +218,14 @@ export function AlbumCanvas({ albums, folderId }: AlbumCanvasProps) {
             : (album.position ?? { x: 0, y: 0 });
 
           return (
-            <div
+            <AlbumCanvasItem
               key={album.id}
-              data-album-card
-              draggable
-              onDragStart={(e) => {
-                useFolderStore.getState().setDraggedAlbum(album, folderId, null);
-                e.dataTransfer.setData('text/plain', album.id);
-                e.dataTransfer.effectAllowed = 'move';
-              }}
-              onDragEnd={() => {
-                useFolderStore.getState().setDraggedAlbum(null, null, null);
-              }}
-              className={cn('absolute pointer-events-auto', isDragging && 'z-50')}
-              style={{
-                left: position.x,
-                top: position.y,
-                width: DEFAULT_CARD_SIZE.width,
-              }}
-              onPointerDown={(event) => startAlbumDrag(event, album)}
-            >
-              <AlbumCard album={album} folderId={folderId} />
-            </div>
+              album={album}
+              folderId={folderId}
+              isDragging={isDragging}
+              position={position}
+              onPointerDown={startAlbumDrag}
+            />
           );
         })}
       </div>
