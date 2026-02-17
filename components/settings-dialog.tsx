@@ -112,7 +112,7 @@ export const SettingsDialog = memo(function SettingsDialog() {
 
           <div className="grid gap-6 py-4">
             <div className="space-y-4">
-              <h4 className="text-sm font-black uppercase tracking-tight border-b-2 border-border pb-1">
+              <h4 className="text-sm font-medium uppercase tracking-tight border-b-2 border-border pb-1">
                 Design Iteration
               </h4>
               <div className="grid grid-cols-2 gap-2">
@@ -123,7 +123,7 @@ export const SettingsDialog = memo(function SettingsDialog() {
                     className="justify-start gap-2 rounded-none h-12 relative overflow-hidden group"
                     onClick={() => useFolderStore.getState().setTheme(t)}
                   >
-                    <span className="relative z-10 text-[10px] font-bold uppercase tracking-widest">{t}</span>
+                    <span className="relative z-10 text-[10px] font-medium uppercase tracking-widest">{t}</span>
                     {theme === t && (
                       <div className="absolute inset-0 bg-primary/20 animate-pulse" />
                     )}
@@ -133,48 +133,9 @@ export const SettingsDialog = memo(function SettingsDialog() {
               </div>
             </div>
 
-            <div className="space-y-4">
-              <h4 className="text-sm font-black uppercase tracking-tight border-b-2 border-border pb-1">
-                Typography (Geist)
-              </h4>
-              <div className="flex flex-col gap-4">
-                <div className="grid grid-cols-2 gap-2">
-                  <Button
-                    variant={geistFont === 'sans' ? 'default' : 'outline'}
-                    className="justify-start gap-2 rounded-none h-10"
-                    onClick={() => useFolderStore.getState().setGeistFont('sans')}
-                  >
-                    <span className="text-[10px] font-bold uppercase tracking-widest">Sans</span>
-                  </Button>
-                  <Button
-                    variant={geistFont === 'mono' ? 'default' : 'outline'}
-                    className="justify-start gap-2 rounded-none h-10"
-                    onClick={() => useFolderStore.getState().setGeistFont('mono')}
-                  >
-                    <span className="text-[10px] font-bold uppercase tracking-widest">Mono</span>
-                  </Button>
-                </div>
-
-                <div className="space-y-2">
-                  <p className="text-[10px] font-mono uppercase text-muted-foreground">Pixel Variations</p>
-                  <div className="grid grid-cols-2 gap-2">
-                    {['pixel-square', 'pixel-grid', 'pixel-circle', 'pixel-line'].map((f) => (
-                      <Button
-                        key={f}
-                        variant={geistFont === f ? 'default' : 'outline'}
-                        className="justify-start gap-2 rounded-none h-8"
-                        onClick={() => useFolderStore.getState().setGeistFont(f as any)}
-                      >
-                        <span className="text-[9px] font-bold uppercase tracking-widest">{f.replace('pixel-', '')}</span>
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
 
             <div className="space-y-4">
-              <h4 className="text-sm font-black uppercase tracking-tight border-b-2 border-border pb-1">
+              <h4 className="text-sm font-medium uppercase tracking-tight border-b-2 border-border pb-1">
                 Streaming Provider
               </h4>
               <div className="grid grid-cols-1 gap-2">
@@ -220,7 +181,7 @@ export const SettingsDialog = memo(function SettingsDialog() {
             </div>
 
             <div className="space-y-4">
-              <h4 className="text-sm font-black uppercase tracking-tight border-b-2 border-border pb-1">
+              <h4 className="text-sm font-medium uppercase tracking-tight border-b-2 border-border pb-1">
                 Data Management
               </h4>
 
@@ -263,7 +224,7 @@ export const SettingsDialog = memo(function SettingsDialog() {
             </div>
 
             <div className="space-y-2 opacity-50">
-              <h4 className="text-sm font-black uppercase tracking-tight border-b-2 border-border pb-1">
+              <h4 className="text-sm font-medium uppercase tracking-tight border-b-2 border-border pb-1">
                 About
               </h4>
               <p className="text-[10px] font-mono uppercase">

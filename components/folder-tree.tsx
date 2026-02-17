@@ -326,7 +326,7 @@ const FolderItem = React.memo(function FolderItem({
               </div>
             ) : (
               <>
-                <span className="text-sm truncate flex-1 min-w-0 font-bold uppercase tracking-tighter">
+                <span className="text-sm truncate flex-1 min-w-0 font-medium uppercase tracking-tighter">
                   {folder.name}
                 </span>
                 <span className="text-[10px] font-mono shrink-0 opacity-70">
@@ -587,7 +587,7 @@ export function FolderTree() {
   return (
     <div className="flex flex-col h-full bg-background border-r-2 border-border">
       <div className="h-[73px] p-4 border-b-2 border-border flex items-center justify-between shrink-0 bg-background">
-        <h2 className="text-lg font-black uppercase tracking-tighter">
+        <h2 className="text-lg font-medium uppercase tracking-tighter">
           Collections
         </h2>
         <div className="flex items-center gap-1">
@@ -683,7 +683,7 @@ export function FolderTree() {
                 variant="outline"
                 size="sm"
                 onClick={() => setIsCreating(true)}
-                className="gap-2 rounded-none border-2 border-dashed border-muted-foreground/50 hover:border-primary hover:text-primary transition-all uppercase tracking-tighter font-bold h-auto py-3 px-4"
+                className="gap-2 rounded-none border-2 border-dashed border-muted-foreground/50 hover:border-primary hover:text-primary transition-all uppercase tracking-tighter font-medium h-auto py-3 px-4"
               >
                 <FolderPlus className="h-4 w-4" />
                 Create your first collection

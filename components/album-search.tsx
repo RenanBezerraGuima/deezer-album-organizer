@@ -66,7 +66,7 @@ const SearchResultItem = React.memo(function SearchResultItem({
       />
       <div className="flex-1 min-w-0 overflow-hidden">
         <p
-          className="text-sm font-bold truncate uppercase tracking-tighter"
+          className="text-sm font-medium truncate uppercase tracking-tighter"
           style={{ fontFamily: 'var(--font-display)' }}
         >
           {album.name}
@@ -76,7 +76,7 @@ const SearchResultItem = React.memo(function SearchResultItem({
             {album.artist}
             {album.releaseDate && ` • ${album.releaseDate.slice(0, 4)}`}
           </p>
-          <span className="text-[10px] px-1 bg-muted border border-border font-mono font-bold shrink-0">
+          <span className="text-[10px] px-1 bg-muted border border-border font-mono font-medium shrink-0">
             {album.id.split('-')[0].toUpperCase()}
           </span>
         </div>
@@ -415,7 +415,7 @@ export function AlbumSearch({ isMobile, onMenuClick }: AlbumSearchProps) {
               <div className="p-2 space-y-1" role="listbox" id={listboxId}>
                 {results.length > 0 && (
                   <div className="px-3 py-1.5 mb-1 border-b border-border/50">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70" style={{ fontFamily: 'var(--font-mono)' }}>
+                    <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground/70" style={{ fontFamily: 'var(--font-mono)' }}>
                       {results.length} RESULTS FOUND
                     </p>
                   </div>
@@ -428,7 +428,7 @@ export function AlbumSearch({ isMobile, onMenuClick }: AlbumSearchProps) {
                     {streamingProvider === 'spotify' && isSpotifyTokenExpired && (
                       <button
                         onClick={() => redirectToSpotifyAuth()}
-                        className="inline-block bg-[#1DB954] text-white px-6 py-2 font-black uppercase tracking-tighter hover:brutalist-shadow transition-all cursor-pointer"
+                        className="inline-block bg-[#1DB954] text-white px-6 py-2 font-medium uppercase tracking-tighter hover:brutalist-shadow transition-all cursor-pointer"
                       >
                         Connect Spotify
                       </button>

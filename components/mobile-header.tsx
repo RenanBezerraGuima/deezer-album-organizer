@@ -24,7 +24,7 @@ export function MobileHeader({ onMenuClick }: MobileHeaderProps) {
                 </Button>
             </div>
 
-            <h1 className="text-xl font-black uppercase tracking-tighter" style={{ fontFamily: 'var(--font-display)' }}>
+            <h1 className="text-xl font-semibold uppercase tracking-tighter" style={{ fontFamily: 'var(--font-display)' }}>
                 ALBUMSHELF
             </h1>
 
