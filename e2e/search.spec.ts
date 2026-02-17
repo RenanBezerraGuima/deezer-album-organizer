@@ -13,7 +13,7 @@ test('search and add multiple albums', async ({ page }) => {
   await page.click('text=My Albums');
 
   // Search for Beatles
-  await page.fill('input[placeholder^="SEARCH ALBUMS ON"]', 'Beatles');
+  await page.fill('input[placeholder^="Search albums on"]', 'Beatles');
 
   // Wait for results
   await page.waitForSelector('text=Abbey Road', { timeout: 10000 });

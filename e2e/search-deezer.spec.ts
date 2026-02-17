@@ -13,15 +13,15 @@ test('verify Deezer search finds specific missing albums', async ({ page }) => {
   await page.click('text=Verification');
 
   // Search for "Rid of Me PJ Harvey"
-  await page.fill('input[placeholder^="SEARCH ALBUMS ON"]', 'Rid of Me PJ Harvey');
+  await page.fill('input[placeholder^="Search albums on"]', 'Rid of Me PJ Harvey');
   await page.waitForSelector('text=Rid Of Me', { timeout: 10000 });
   await expect(page.locator('text=Rid Of Me').first()).toBeVisible();
 
   // Clear search
-  await page.fill('input[placeholder^="SEARCH ALBUMS ON"]', '');
+  await page.fill('input[placeholder^="Search albums on"]', '');
 
   // Search for "Forever Howlong"
-  await page.fill('input[placeholder^="SEARCH ALBUMS ON"]', 'Forever Howlong');
+  await page.fill('input[placeholder^="Search albums on"]', 'Forever Howlong');
   await page.waitForSelector('text=Forever Howlong', { timeout: 10000 });
   await expect(page.locator('text=Forever Howlong').first()).toBeVisible();
 });

@@ -13,7 +13,7 @@ test('add and then remove album from search results', async ({ page }) => {
   await page.click('text=Test Collection');
 
   // Search for an album
-  await page.fill('input[placeholder^="SEARCH ALBUMS ON"]', 'Thriller');
+  await page.fill('input[placeholder^="Search albums on"]', 'Thriller');
 
   // Wait for results
   const albumText = 'Thriller';

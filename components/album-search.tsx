@@ -76,7 +76,7 @@ const SearchResultItem = React.memo(function SearchResultItem({
             {album.artist}
             {album.releaseDate && ` • ${album.releaseDate.slice(0, 4)}`}
           </p>
-          <span className="text-[10px] px-1 bg-muted border border-border font-mono font-medium shrink-0">
+          <span className="text-[10px] px-1 bg-muted text-foreground border border-border font-mono font-medium shrink-0">
             {album.id.split('-')[0].toUpperCase()}
           </span>
         </div>
