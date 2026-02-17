@@ -289,7 +289,7 @@ const FolderItem = React.memo(function FolderItem({
                     ref={editInputRef}
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
-                    className="h-6 text-sm py-0 pr-12 flex-1 min-w-0 rounded-none border-border"
+                    className="h-6 text-sm py-0 pr-12 flex-1 min-w-0 rounded-none border-border text-foreground"
                     autoFocus
                     maxLength={100}
                     aria-label="Rename collection"

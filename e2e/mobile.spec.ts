@@ -9,11 +9,11 @@ test('mobile menu should open and allow selecting collections', async ({ page })
   await page.getByRole('button', { name: 'Deezer' }).click();
 
   // Verify mobile search placeholder
-  const searchInput = page.getByPlaceholder('SEARCH...');
+  const searchInput = page.getByPlaceholder('Search...');
   await expect(searchInput).toBeVisible();
 
   // On mobile, AlbumGrid should be visible
-  await expect(page.getByText('NO COLLECTION SELECTED')).toBeVisible();
+  await expect(page.getByText('No collection selected')).toBeVisible();
 
   // Click the menu button to show FolderTree
   await page.click('button[aria-label="Open menu"]');
@@ -33,9 +33,9 @@ test('mobile menu should open and allow selecting collections', async ({ page })
   await page.click('text=Mobile Collection');
 
   // Verify breadcrumb in AlbumGrid header
-  const header = page.locator('div:has(> p:text-matches("CATALOG DATA"))').first();
+  const header = page.locator('div:has(> p:text-matches("Catalog data"))').first();
   await expect(header).toContainText('Mobile Collection');
 
-  // Verify it says COLLECTION EMPTY instead of NO COLLECTION SELECTED
-  await expect(page.getByText('COLLECTION EMPTY')).toBeVisible();
+  // Verify it says Collection empty instead of No collection selected
+  await expect(page.getByText('Collection empty')).toBeVisible();
 });

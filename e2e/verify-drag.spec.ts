@@ -19,7 +19,7 @@ test('verify album drag improvements', async ({ page }) => {
   await page.click('text=Folder A');
 
   // Search and add an album
-  await page.fill('input[placeholder^="SEARCH ALBUMS ON"]', 'Beatles');
+  await page.fill('input[placeholder^="Search albums on"]', 'Beatles');
   await page.waitForSelector('text=Abbey Road', { timeout: 10000 });
 
   // Check SearchResultItem image
