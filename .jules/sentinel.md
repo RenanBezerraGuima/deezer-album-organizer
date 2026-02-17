@@ -59,3 +59,8 @@
 **Vulnerability:** Application state (Theme, ViewMode, StreamingProvider) was updated from untrusted sources (JSON imports, storage) without runtime validation, relying solely on TypeScript types.
 **Learning:** TypeScript provides compile-time safety, but runtime security requires explicit validation of data entering the application state from external boundaries. Unvalidated state can lead to class injection (in ThemeHandler) or logical bypasses.
 **Prevention:** Define runtime constants (allowlists) for all enumerated types and implement strict validation helpers. Enforce these validations at every entry point: individual setters, bulk import functions, and state hydration logic.
+
+## 2026-03-15 - [CSP for Static Exports]
+**Vulnerability:** Lack of Content Security Policy (CSP) left the application vulnerable to XSS and unauthorized data exfiltration.
+**Learning:** For static Next.js exports, a `<meta http-equiv="Content-Security-Policy">` tag is the primary defense. It must carefully whitelist all external domains for scripts (especially JSONP), images, and API connections to prevent breakage while maintaining a restrictive posture.
+**Prevention:** Implement a restrictive CSP meta tag and verify it against all supported streaming providers. Ensure `script-src` and `connect-src` cover all API domains, and `img-src` covers all CDN domains used for album covers (e.g., `dzcdn.net`, `mzstatic.com`).
