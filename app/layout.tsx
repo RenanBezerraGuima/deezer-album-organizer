@@ -30,6 +30,12 @@ export default function RootLayout({
       className={`${GeistMono.variable}`}
     >
       <body className="antialiased">
+        <a
+          href="#main-content"
+          className="fixed -top-16 left-4 z-[9999] px-4 py-2 bg-primary text-primary-foreground focus:top-4 focus:outline-none transition-all duration-200 brutalist-shadow font-medium tracking-tighter"
+        >
+          Skip to content
+        </a>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <ThemeHandler />
           {children}

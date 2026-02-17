@@ -80,7 +80,7 @@ export function AlbumGrid({ isMobile }: { isMobile?: boolean }) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div id="main-content" tabIndex={-1} className="flex flex-col h-full bg-background outline-none">
       <div className={cn(
         "h-[73px] border-b-2 border-border shrink-0 flex flex-col justify-center bg-background",
         isMobile ? "p-3" : "p-4"

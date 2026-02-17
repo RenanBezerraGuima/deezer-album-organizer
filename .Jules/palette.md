@@ -17,3 +17,11 @@
 ## 2026-02-05 - [Empty States and Shortcuts]
 **Learning:** For high-volume discovery components like search, an empty state isn't just a placeholder; it's a feedback loop. Combining "No results" messages with keyboard shortcut hints (like `[/]`) empowers both new and power users by providing clear status and efficient discovery.
 **Action:** Always include specific "No results found" messages that echo the user's query, and provide discoverable keyboard shortcuts for core navigation actions.
+
+## 2025-05-22 - [Skip to Content Link Implementation]
+**Learning:** For SPAs with a global layout, the "Skip to content" link should be placed in the root layout (app/layout.tsx) and use 'fixed' positioning to ensure it reliably appears above all other elements regardless of the page-level scrolling or relative containers.
+**Action:** Always place skip links at the very top of the body in the root layout and use fixed positioning with a high z-index to guarantee visibility when focused.
+
+## 2025-05-22 - [Character Counter Noise Reduction]
+**Learning:** When inputs are already linked to character counters via aria-describedby, setting aria-live="polite" on the counter creates excessive noise for screen reader users. Using aria-hidden="true" on the visual counter while maintaining the aria-describedby link on the input provides the necessary context without the repetitive keystroke announcements.
+**Action:** Use aria-hidden="true" for visual character counters that are already properly linked to their parent inputs via aria-describedby to reduce accessibility noise.
