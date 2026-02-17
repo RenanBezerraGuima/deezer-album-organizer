@@ -27,6 +27,7 @@ interface FolderStore {
   spotifyTokenTimestamp: number | null;
   theme: Theme;
   geistFont: GeistFont;
+  isSettingsOpen: boolean;
   lastUpdated: number;
 
   // Folder actions
@@ -75,6 +76,7 @@ interface FolderStore {
   ) => void;
   setTheme: (theme: Theme) => void;
   setGeistFont: (font: GeistFont) => void;
+  setSettingsOpen: (open: boolean) => void;
   setFolderViewMode: (id: string, mode: AlbumViewMode) => void;
 }
 
@@ -344,6 +346,7 @@ export const useFolderStore = create<FolderStore>()(
       spotifyTokenTimestamp: null,
       theme: "industrial",
       geistFont: "sans",
+      isSettingsOpen: false,
       lastUpdated: 0,
 
       createFolder: (name, parentId) => {
@@ -658,6 +661,11 @@ export const useFolderStore = create<FolderStore>()(
         if (!isValidGeistFont(font)) return;
         set({ geistFont: font, lastUpdated: Date.now() });
       },
+
+      setSettingsOpen: (open) => {
+        set({ isSettingsOpen: open });
+      },
+
       setFolderViewMode: (id, mode) => {
         if (!isValidViewMode(mode)) return;
         set((state) => ({
@@ -680,6 +688,7 @@ export const useFolderStore = create<FolderStore>()(
           draggedAlbumIndex,
           draggedFolder,
           draggedFolderParentId,
+          isSettingsOpen,
           ...persistedState
         } = state;
         return persistedState;
