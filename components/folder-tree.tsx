@@ -12,10 +12,10 @@ import {
   Check,
   X,
   GripVertical,
+  Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { SettingsDialog } from "@/components/settings-dialog";
 import {
   Dialog,
   DialogContent,
@@ -592,7 +592,16 @@ export function FolderTree() {
         </h2>
         <div className="flex items-center gap-1">
           <ThemeToggle />
-          <SettingsDialog />
+          <Button
+            size="icon"
+            variant="ghost"
+            className="rounded-none border-border"
+            onClick={() => useFolderStore.getState().setSettingsOpen(true)}
+            title="Settings"
+            aria-label="Settings"
+          >
+            <Settings className="h-4 w-4" />
+          </Button>
           <Button
             size="icon"
             variant="ghost"

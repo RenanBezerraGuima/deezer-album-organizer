@@ -3,7 +3,7 @@
 import React from 'react';
 import { Menu, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { SettingsDialog } from './settings-dialog';
+import { useFolderStore } from '@/lib/store';
 
 interface MobileHeaderProps {
     onMenuClick: () => void;
@@ -29,7 +29,16 @@ export function MobileHeader({ onMenuClick }: MobileHeaderProps) {
             </h1>
 
             <div className="flex items-center gap-2">
-                <SettingsDialog />
+                <Button
+                    size="icon"
+                    variant="ghost"
+                    className="rounded-none border-border"
+                    onClick={() => useFolderStore.getState().setSettingsOpen(true)}
+                    title="Settings"
+                    aria-label="Settings"
+                >
+                    <Settings className="h-4 w-4" />
+                </Button>
             </div>
         </header>
     );

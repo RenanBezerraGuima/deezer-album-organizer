@@ -5,6 +5,7 @@ import { FolderTree } from '@/components/folder-tree';
 import { AlbumGrid } from '@/components/album-grid';
 import { AlbumSearch } from '@/components/album-search';
 import { FirstTimeSetup } from '@/components/first-time-setup';
+import { SettingsDialog } from '@/components/settings-dialog';
 import { SpotifyCallbackHandler } from '@/components/spotify-callback-handler';
 import { MobileHeader } from '@/components/mobile-header';
 import {
@@ -22,6 +23,7 @@ export default function Home() {
   return (
     <main className="h-[100dvh] flex flex-col bg-background relative overflow-hidden">
       <FirstTimeSetup />
+      <SettingsDialog />
       <SpotifyCallbackHandler />
 
       {isMobile ? (
