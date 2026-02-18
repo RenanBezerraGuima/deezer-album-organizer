@@ -1,9 +1,9 @@
 import type { Album, Theme, AlbumViewMode, StreamingProvider, GeistFont } from './types';
 import { THEMES, VIEW_MODES, STREAMING_PROVIDERS, GEIST_FONTS } from './types';
 
-const ALLOWED_PROTOCOLS = ['http:', 'https:'];
+const ALLOWED_PROTOCOLS = ['https:'];
 const MAX_URL_LENGTH = 2048;
-const MAX_TEXT_LENGTH = 200;
+export const MAX_TEXT_LENGTH = 200;
 
 /**
  * Sanitize a URL to prevent XSS via javascript: or other dangerous protocols.

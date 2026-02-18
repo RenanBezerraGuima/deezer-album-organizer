@@ -64,3 +64,8 @@
 **Vulnerability:** Lack of Content Security Policy (CSP) left the application vulnerable to XSS and unauthorized data exfiltration.
 **Learning:** For static Next.js exports, a `<meta http-equiv="Content-Security-Policy">` tag is the primary defense. It must carefully whitelist all external domains for scripts (especially JSONP), images, and API connections to prevent breakage while maintaining a restrictive posture.
 **Prevention:** Implement a restrictive CSP meta tag and verify it against all supported streaming providers. Ensure `script-src` and `connect-src` cover all API domains, and `img-src` covers all CDN domains used for album covers (e.g., `dzcdn.net`, `mzstatic.com`).
+
+## 2026-03-20 - [Insecure Mixed Content Protocol Bypasses]
+**Vulnerability:** Allowing `http:` in `sanitizeUrl` permitted the use of insecure external resources (images/links), exposing users to potential man-in-the-middle attacks.
+**Learning:** Hardening protocol whitelists to `https:` is a simple but effective defense-in-depth measure. While most modern APIs use HTTPS, explicitly enforcing it in the application's sanitization layer prevents accidental or malicious fallback to insecure protocols.
+**Prevention:** Only allow `https:` and safe relative paths in `sanitizeUrl` by default.

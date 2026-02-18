@@ -1,5 +1,5 @@
 import type { Album } from './types';
-import { sanitizeAlbum } from './security';
+import { sanitizeAlbum, MAX_TEXT_LENGTH } from './security';
 
 // Simple in-memory cache for search results
 const searchCache = new Map<string, { data: Album[], timestamp: number }>();
@@ -17,7 +17,8 @@ function withCache<T extends any[]>(
   fn: (query: string, ...args: T) => Promise<Album[]>
 ) {
   return async (query: string, ...args: T): Promise<Album[]> => {
-    const trimmedQuery = query.trim().toLowerCase();
+    // Defense-in-depth: truncate query to prevent potential DoS or cache bloat
+    const trimmedQuery = query.trim().toLowerCase().slice(0, MAX_TEXT_LENGTH);
     if (!trimmedQuery) return [];
 
     // Note: token is intentionally omitted from the cache key as search results

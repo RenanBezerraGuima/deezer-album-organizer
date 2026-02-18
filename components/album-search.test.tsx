@@ -45,9 +45,9 @@ describe('AlbumSearch top panel layout', () => {
       id: 'deezer-1',
       name: 'Test Album',
       artist: 'Test Artist',
-      imageUrl: 'http://example.com/image.jpg',
+      imageUrl: 'https://example.com/image.jpg',
       totalTracks: 12,
-      externalUrl: 'http://example.com/album'
+      externalUrl: 'https://example.com/album'
     }];
 
     vi.mocked(searchAlbumsDeezer).mockResolvedValue(mockAlbums);
