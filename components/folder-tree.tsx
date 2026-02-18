@@ -257,7 +257,6 @@ const FolderItem = React.memo(function FolderItem({
             <GripVertical
               className="h-3 w-3 opacity-0 group-hover:opacity-100 cursor-grab shrink-0"
               aria-label="Drag to reorder"
-              title="Drag to reorder"
             />
 
             <button
@@ -594,8 +593,9 @@ export function FolderTree() {
             variant="ghost"
             className="rounded-none border-border"
             onClick={() => useFolderStore.getState().setSettingsOpen(true)}
-            title="Settings"
-            aria-label="Settings"
+            title="Settings [S]"
+            aria-label="Settings [S]"
+            aria-keyshortcuts="s"
           >
             <Settings className="h-4 w-4" />
           </Button>

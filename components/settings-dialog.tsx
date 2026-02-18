@@ -24,7 +24,6 @@ export const SettingsDialog = memo(function SettingsDialog() {
    */
   const {
     isOpen,
-    setIsOpen,
     streamingProvider,
     theme,
     geistFont,
@@ -33,7 +32,6 @@ export const SettingsDialog = memo(function SettingsDialog() {
     spotifyTokenTimestamp
   } = useFolderStore(useShallow((state) => ({
     isOpen: state.isSettingsOpen,
-    setIsOpen: state.setSettingsOpen,
     streamingProvider: state.streamingProvider,
     theme: state.theme,
     geistFont: state.geistFont,
@@ -49,6 +47,22 @@ export const SettingsDialog = memo(function SettingsDialog() {
     const now = Date.now();
     return now < spotifyTokenTimestamp + (spotifyTokenExpiry * 1000);
   }, [spotifyToken, spotifyTokenExpiry, spotifyTokenTimestamp]);
+
+  // Global keyboard shortcut for settings (S)
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isInputActive = ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName || '');
+      const isContentEditable = (document.activeElement as HTMLElement)?.isContentEditable;
+
+      if (e.key.toLowerCase() === 's' && !isInputActive && !isContentEditable && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        e.preventDefault();
+        useFolderStore.getState().setSettingsOpen(!useFolderStore.getState().isSettingsOpen);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   /**
    * Performance: Accessing large state slices (like 'folders') only inside event handlers
@@ -100,7 +114,7 @@ export const SettingsDialog = memo(function SettingsDialog() {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={(open) => useFolderStore.getState().setSettingsOpen(open)}>
       <DialogContent className="sm:max-w-[425px] w-[95vw] max-h-[90dvh] p-0 overflow-hidden flex flex-col">
         <div className="p-6 overflow-y-auto">
           <DialogHeader>

@@ -17,3 +17,7 @@
 ## 2026-05-20 - [Character Counters and Double-Click Shortcuts]
 **Learning:** Combining intuitive shortcuts (double-click to rename) with real-time feedback (character counters) enhances both power-user efficiency and general accessibility. When implementing counters, using `aria-describedby` ensures screen reader compatibility, while slightly larger font sizes and higher contrast maintain legibility in technical UIs.
 **Action:** Always link character counters to their inputs using ARIA attributes and ensure they meet minimum contrast requirements even in minimalist themes.
+
+## 2025-05-21 - [Keyboard Shortcut Hints and Power-User Patterns]
+**Learning:** Introducing global keyboard shortcuts (e.g., 'S' for Settings, 'T' for Theme) significantly enhances power-user efficiency. Visually communicating these shortcuts via bracketed hints in labels and tooltips (e.g., 'Settings [S]') improves discoverability while ensuring they don't trigger during text input.
+**Action:** Accompany global keyboard shortcuts with visual bracketed hints in labels and titles, and ensure they are guarded against active input elements and modifier keys.
