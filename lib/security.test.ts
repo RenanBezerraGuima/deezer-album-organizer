@@ -87,8 +87,8 @@ describe('Security: Input Validation', () => {
 
 describe('Security Utilities', () => {
   describe('sanitizeUrl', () => {
-    it('should allow valid http and https URLs', () => {
-      expect(sanitizeUrl('http://example.com')).toBe('http://example.com');
+    it('should allow valid https URLs and reject http URLs', () => {
+      expect(sanitizeUrl('http://example.com')).toBeUndefined();
       expect(sanitizeUrl('https://example.com/path?query=1')).toBe('https://example.com/path?query=1');
     });
 
@@ -139,8 +139,9 @@ describe('Security Utilities', () => {
   });
 
   describe('sanitizeImageUrl', () => {
-    it('should allow valid http and https image URLs', () => {
+    it('should allow valid https image URLs and reject http', () => {
       expect(sanitizeImageUrl('https://example.com/image.jpg')).toBe('https://example.com/image.jpg');
+      expect(sanitizeImageUrl('http://example.com/image.jpg')).toBeUndefined();
     });
 
     it('should allow data:image/ protocols', () => {

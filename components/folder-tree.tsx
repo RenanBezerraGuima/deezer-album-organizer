@@ -257,7 +257,6 @@ const FolderItem = React.memo(function FolderItem({
             <GripVertical
               className="h-3 w-3 opacity-0 group-hover:opacity-100 cursor-grab shrink-0"
               aria-label="Drag to reorder"
-              title="Drag to reorder"
             />
 
             <button
