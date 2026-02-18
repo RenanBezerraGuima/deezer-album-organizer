@@ -34,8 +34,9 @@ export function MobileHeader({ onMenuClick }: MobileHeaderProps) {
                     variant="ghost"
                     className="rounded-none border-border"
                     onClick={() => useFolderStore.getState().setSettingsOpen(true)}
-                    title="Settings"
-                    aria-label="Settings"
+                    title="Settings [S]"
+                    aria-label="Settings [S]"
+                    aria-keyshortcuts="s"
                 >
                     <Settings className="h-4 w-4" />
                 </Button>

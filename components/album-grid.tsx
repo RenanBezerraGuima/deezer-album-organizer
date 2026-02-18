@@ -136,9 +136,12 @@ export function AlbumGrid({ isMobile }: { isMobile?: boolean }) {
             size="sm"
             onClick={() => window.dispatchEvent(new CustomEvent('albumshelf:focus-search'))}
             className="gap-2 rounded-none border-2 border-dashed border-muted-foreground/50 hover:border-primary hover:text-primary transition-all tracking-tighter font-medium h-auto py-3 px-4"
+            title="Find your first album [/]"
+            aria-label="Find your first album [/]"
+            aria-keyshortcuts="/"
           >
             <Search className="h-4 w-4" />
-            Find your first album
+            Find your first album [/]
           </Button>
         </div>
       ) : albumViewMode === 'canvas' ? (
