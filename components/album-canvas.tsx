@@ -70,6 +70,46 @@ const AlbumCanvasItem = React.memo(function AlbumCanvasItem({
   );
 });
 
+/**
+ * Performance: Extracting the list into a memoized component allows React to skip
+ * the entire O(Visible) reconciliation of the album list during panning.
+ * When panning, 'visibleAlbums' is stable (due to throttled filtering) and
+ * 'draggedAlbum' is null, enabling a complete skip of this component's re-render.
+ */
+const AlbumCanvasList = React.memo(function AlbumCanvasList({
+  visibleAlbums,
+  folderId,
+  draggedAlbum,
+  onPointerDown,
+}: {
+  visibleAlbums: Album[];
+  folderId: string;
+  draggedAlbum: { id: string; currentPos: AlbumPosition } | null;
+  onPointerDown: (event: React.PointerEvent<HTMLDivElement>, album: Album) => void;
+}) {
+  return (
+    <>
+      {visibleAlbums.map((album) => {
+        const isDragging = draggedAlbum?.id === album.id;
+        const position = isDragging
+          ? draggedAlbum.currentPos
+          : (album.position ?? { x: 0, y: 0 });
+
+        return (
+          <AlbumCanvasItem
+            key={album.id}
+            album={album}
+            folderId={folderId}
+            isDragging={isDragging}
+            position={position}
+            onPointerDown={onPointerDown}
+          />
+        );
+      })}
+    </>
+  );
+});
+
 export function AlbumCanvas({ albums, folderId }: AlbumCanvasProps) {
   const setAlbumPosition = useFolderStore((state) => state.setAlbumPosition);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -89,6 +129,13 @@ export function AlbumCanvas({ albums, folderId }: AlbumCanvasProps) {
     currentPos: AlbumPosition;
   } | null>(null);
 
+  // Performance: Throttling the visibility filter significantly reduces O(N) operations.
+  // We only re-filter if the camera moves more than 50px (screen space) or if zoom/albums change.
+  // The 200px margin in getViewportWorldBoundaries ensures items are still visible during the throttle.
+  const lastCameraRef = useRef<CameraState>(camera);
+  const lastAlbumsRef = useRef<Album[]>(albums);
+  const lastVisibleAlbumsRef = useRef<Album[]>([]);
+
   const visibleAlbums = useMemo(() => {
     const container = containerRef.current;
     const viewport = {
@@ -96,17 +143,34 @@ export function AlbumCanvas({ albums, folderId }: AlbumCanvasProps) {
       height: container?.clientHeight ?? window.innerHeight,
     };
 
+    const panThreshold = 50; // pixels
+    const movedEnough =
+      Math.abs(camera.x - lastCameraRef.current.x) > panThreshold ||
+      Math.abs(camera.y - lastCameraRef.current.y) > panThreshold ||
+      camera.zoom !== lastCameraRef.current.zoom ||
+      albums !== lastAlbumsRef.current ||
+      lastVisibleAlbumsRef.current.length === 0;
+
+    if (!movedEnough) {
+      return lastVisibleAlbumsRef.current;
+    }
+
     // Pre-calculate world viewport boundaries once per render to avoid
     // redundant calculations in the O(N) filter loop.
     const bounds = getViewportWorldBoundaries(camera, viewport);
 
-    return albums.filter((album) => {
+    const result = albums.filter((album) => {
       // Always include the dragged album so it doesn't pop out of existence
       // if moved out of its initial world-space bounds while dragging.
       if (album.id === draggedAlbum?.id) return true;
       const pos = album.position ?? { x: 0, y: 0 };
       return isAlbumVisibleInWorld(pos, bounds, DEFAULT_CARD_SIZE);
     });
+
+    lastCameraRef.current = camera;
+    lastAlbumsRef.current = albums;
+    lastVisibleAlbumsRef.current = result;
+    return result;
   }, [albums, camera, draggedAlbum?.id]);
 
   const startPan = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
@@ -211,23 +275,12 @@ export function AlbumCanvas({ albums, folderId }: AlbumCanvasProps) {
         }}
         className="absolute inset-0 pointer-events-none"
       >
-        {visibleAlbums.map((album) => {
-          const isDragging = draggedAlbum?.id === album.id;
-          const position = isDragging
-            ? draggedAlbum.currentPos
-            : (album.position ?? { x: 0, y: 0 });
-
-          return (
-            <AlbumCanvasItem
-              key={album.id}
-              album={album}
-              folderId={folderId}
-              isDragging={isDragging}
-              position={position}
-              onPointerDown={startAlbumDrag}
-            />
-          );
-        })}
+        <AlbumCanvasList
+          visibleAlbums={visibleAlbums}
+          folderId={folderId}
+          draggedAlbum={draggedAlbum}
+          onPointerDown={startAlbumDrag}
+        />
       </div>
     </div>
   );
