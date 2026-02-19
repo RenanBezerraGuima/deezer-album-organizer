@@ -217,4 +217,32 @@ describe('useFolderStore', () => {
     setTheme('organic');
     expect(useFolderStore.getState().lastUpdated).toBeGreaterThan(currentLastUpdated);
   });
+
+  it('should truncate spotifyToken to 1024 characters', () => {
+    const { setSpotifyToken } = useFolderStore.getState();
+    const longToken = 'A'.repeat(2000);
+    setSpotifyToken(longToken, 3600, Date.now());
+    expect(useFolderStore.getState().spotifyToken?.length).toBe(1024);
+  });
+
+  it('should validate state during rehydration', () => {
+    const persistOptions = useFolderStore.persist.getOptions();
+    const onRehydrateStorage = persistOptions.onRehydrateStorage;
+    if (onRehydrateStorage) {
+      const handler = onRehydrateStorage(useFolderStore.getState());
+      if (handler) {
+        const maliciousState: any = {
+          theme: 'malicious',
+          streamingProvider: 'malicious',
+          spotifyToken: 'A'.repeat(2000),
+          lastUpdated: 'invalid'
+        };
+        handler(maliciousState, undefined);
+        expect(maliciousState.theme).toBe('industrial');
+        expect(maliciousState.streamingProvider).toBe('deezer');
+        expect(maliciousState.spotifyToken.length).toBe(1024);
+        expect(typeof maliciousState.lastUpdated).toBe('number');
+      }
+    }
+  });
 });

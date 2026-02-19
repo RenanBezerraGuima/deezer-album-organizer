@@ -69,3 +69,8 @@
 **Vulnerability:** Allowing `http:` in `sanitizeUrl` permitted the use of insecure external resources (images/links), exposing users to potential man-in-the-middle attacks.
 **Learning:** Hardening protocol whitelists to `https:` is a simple but effective defense-in-depth measure. While most modern APIs use HTTPS, explicitly enforcing it in the application's sanitization layer prevents accidental or malicious fallback to insecure protocols.
 **Prevention:** Only allow `https:` and safe relative paths in `sanitizeUrl` by default.
+
+## 2025-05-20 - [Defense in Depth: State Hydration Validation]
+**Vulnerability:** Application state (Theme, StreamingProvider) hydrated from untrusted localStorage without validation.
+**Learning:** Persisted state in local-first applications is an attack vector if a user is tricked into modifying localStorage or if an XSS exists elsewhere. Relying on setters is insufficient for security if hydration skips those checks.
+**Prevention:** Always implement validation logic in the store's hydration hook (e.g., Zustand's onRehydrateStorage) to ensure data integrity on startup.

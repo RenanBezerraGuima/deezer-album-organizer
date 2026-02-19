@@ -644,7 +644,7 @@ export const useFolderStore = create<FolderStore>()(
 
       setSpotifyToken: (token, expiresIn, timestamp) => {
         set({
-          spotifyToken: token,
+          spotifyToken: token ? String(token).slice(0, 1024) : null,
           spotifyTokenExpiry: expiresIn,
           spotifyTokenTimestamp: timestamp,
           lastUpdated: Date.now(),
@@ -677,6 +677,22 @@ export const useFolderStore = create<FolderStore>()(
     }),
     {
       name: "album-shelf-storage",
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          // Defense-in-depth: Validate rehydrated state from untrusted localStorage
+          if (!isValidTheme(state.theme)) state.theme = "industrial";
+          if (!isValidStreamingProvider(state.streamingProvider))
+            state.streamingProvider = "deezer";
+          if (state.spotifyToken)
+            state.spotifyToken = String(state.spotifyToken).slice(0, 1024);
+          if (
+            typeof state.lastUpdated !== "number" ||
+            !Number.isFinite(state.lastUpdated)
+          ) {
+            state.lastUpdated = Date.now();
+          }
+        }
+      },
       // Exclude drag-and-drop state from persistence to avoid unnecessary
       // localStorage writes and expensive serialization during drag operations.
       partialize: (state) => {
