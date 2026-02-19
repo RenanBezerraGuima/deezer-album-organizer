@@ -254,10 +254,13 @@ const FolderItem = React.memo(function FolderItem({
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
           >
-            <GripVertical
-              className="h-3 w-3 opacity-0 group-hover:opacity-100 cursor-grab shrink-0"
+            <span
+              title="Drag to reorder"
               aria-label="Drag to reorder"
-            />
+              className="opacity-0 group-hover:opacity-100 cursor-grab shrink-0"
+            >
+              <GripVertical className="h-3 w-3" />
+            </span>
 
             <button
               onClick={handleToggle}
@@ -543,6 +546,30 @@ export function FolderTree() {
       return () => clearTimeout(timer);
     }
   }, [isCreating]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isInputActive =
+        ["INPUT", "TEXTAREA", "SELECT"].includes(
+          document.activeElement?.tagName || "",
+        ) || (document.activeElement as HTMLElement)?.isContentEditable;
+
+      if (
+        e.key.toLowerCase() === "n" &&
+        !isInputActive &&
+        !e.metaKey &&
+        !e.ctrlKey &&
+        !e.altKey
+      ) {
+        e.preventDefault();
+        setIsCreating(true);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   const [isDragOver, setIsDragOver] = useState(false);
 
   // Granular subscriptions for data used in render.
@@ -604,8 +631,9 @@ export function FolderTree() {
             variant="ghost"
             className="rounded-none hover:bg-primary hover:text-primary-foreground border-border"
             onClick={() => setIsCreating(true)}
-            title="Create collection"
-            aria-label="Create collection"
+            title="Create collection [N]"
+            aria-label="Create collection [N]"
+            aria-keyshortcuts="n"
           >
             <FolderPlus className="h-4 w-4" />
           </Button>
