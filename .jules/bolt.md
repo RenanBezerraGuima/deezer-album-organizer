@@ -45,3 +45,7 @@
 ## 2026-04-20 - [Optimizing Canvas Panning with Stable Handlers and Memoization]
 **Learning:** In interactive canvas views, updating screen-space positions during pan/zoom triggers re-renders of the entire item list. While `AlbumCard` might be memoized, the parent container's reconciliation still happens every frame. Extracting the item wrapper into a `memo` component and using truly stable event handlers (stabilized by `useRef` or by pruning dependencies from `useCallback`) allows React to skip reconciliation for almost all items during high-frequency movement.
 **Action:** Use memoized item wrappers in lists/grids. Stabilize handlers by accessing state via `ref` or `getState()` to avoid dependency changes.
+
+## 2025-05-28 - [Early-Exit Tree Traversal and Recursive Breadcrumb Caching]
+**Learning:** Standard `map`-based tree updates always visit every node in a level even if the target has been found. Switching to `for` loops with early returns reduces traversal overhead. Additionally, `getBreadcrumb` benefits from recursive caching; by calling itself recursively, it populates the `WeakMap` cache for stable subtrees, turning O(N) traversals into O(depth) on subsequent state versions.
+**Action:** Use `for` loops for single-target tree mutations. Ensure recursive tree lookups call themselves to maximize cache hits across structural sharing updates.

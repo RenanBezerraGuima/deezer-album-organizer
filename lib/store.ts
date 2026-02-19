@@ -156,25 +156,22 @@ export const getBreadcrumb = (
   }
   if (cache.has(targetId)) return cache.get(targetId)!;
 
-  const path: string[] = [];
-
-  function find(folderList: Folder[], target: string): boolean {
-    for (const folder of folderList) {
-      if (folder.id === target) {
-        path.push(folder.name);
-        return true;
-      }
-      if (find(folder.subfolders, target)) {
-        path.unshift(folder.name);
-        return true;
-      }
+  for (const folder of folders) {
+    if (folder.id === targetId) {
+      const result = [folder.name];
+      cache.set(targetId, result);
+      return result;
     }
-    return false;
+    const subPath = getBreadcrumb(folder.subfolders, targetId);
+    if (subPath.length > 0) {
+      const result = [folder.name, ...subPath];
+      cache.set(targetId, result);
+      return result;
+    }
   }
 
-  find(folders, targetId);
-  cache.set(targetId, path);
-  return path;
+  cache.set(targetId, []);
+  return [];
 };
 
 const updateFolderInTree = (
@@ -182,48 +179,37 @@ const updateFolderInTree = (
   id: string,
   updater: (folder: Folder) => Folder,
 ): Folder[] => {
-  let changed = false;
-  const newFolders = folders.map((folder) => {
+  for (let i = 0; i < folders.length; i++) {
+    const folder = folders[i];
     if (folder.id === id) {
-      changed = true;
-      return updater(folder);
+      const result = [...folders];
+      result[i] = updater(folder);
+      return result;
     }
     const newSubfolders = updateFolderInTree(folder.subfolders, id, updater);
     if (newSubfolders !== folder.subfolders) {
-      changed = true;
-      return {
-        ...folder,
-        subfolders: newSubfolders,
-      };
+      const result = [...folders];
+      result[i] = { ...folder, subfolders: newSubfolders };
+      return result;
     }
-    return folder;
-  });
-  return changed ? newFolders : folders;
+  }
+  return folders;
 };
 
 const deleteFolderFromTree = (folders: Folder[], id: string): Folder[] => {
-  let changed = false;
-  const filtered = folders.filter((folder) => {
+  for (let i = 0; i < folders.length; i++) {
+    const folder = folders[i];
     if (folder.id === id) {
-      changed = true;
-      return false;
+      return folders.filter((_, index) => index !== i);
     }
-    return true;
-  });
-
-  const newFolders = filtered.map((folder) => {
     const newSubfolders = deleteFolderFromTree(folder.subfolders, id);
     if (newSubfolders !== folder.subfolders) {
-      changed = true;
-      return {
-        ...folder,
-        subfolders: newSubfolders,
-      };
+      const result = [...folders];
+      result[i] = { ...folder, subfolders: newSubfolders };
+      return result;
     }
-    return folder;
-  });
-
-  return changed ? newFolders : folders;
+  }
+  return folders;
 };
 
 const addFolderToTree = (
@@ -235,14 +221,15 @@ const addFolderToTree = (
     return [...folders, newFolder];
   }
 
-  let changed = false;
-  const newFolders = folders.map((folder) => {
+  for (let i = 0; i < folders.length; i++) {
+    const folder = folders[i];
     if (folder.id === parentId) {
-      changed = true;
-      return {
+      const result = [...folders];
+      result[i] = {
         ...folder,
         subfolders: [...folder.subfolders, newFolder],
       };
+      return result;
     }
     const newSubfolders = addFolderToTree(
       folder.subfolders,
@@ -250,16 +237,13 @@ const addFolderToTree = (
       newFolder,
     );
     if (newSubfolders !== folder.subfolders) {
-      changed = true;
-      return {
-        ...folder,
-        subfolders: newSubfolders,
-      };
+      const result = [...folders];
+      result[i] = { ...folder, subfolders: newSubfolders };
+      return result;
     }
-    return folder;
-  });
+  }
 
-  return changed ? newFolders : folders;
+  return folders;
 };
 
 const isDescendant = (
@@ -296,19 +280,23 @@ const insertFolderAtPosition = (
     return newFolders;
   }
 
-  let changed = false;
-  const newFolders = folders.map((f) => {
+  for (let i = 0; i < folders.length; i++) {
+    const f = folders[i];
     if (f.id === parentId) {
-      changed = true;
+      const result = [...folders];
       if (targetId === null) {
-        return { ...f, subfolders: [...f.subfolders, folder] };
+        result[i] = { ...f, subfolders: [...f.subfolders, folder] };
+      } else {
+        const targetIndex = f.subfolders.findIndex((sf) => sf.id === targetId);
+        const newSubfolders = [...f.subfolders];
+        if (targetIndex === -1) {
+          newSubfolders.push(folder);
+        } else {
+          newSubfolders.splice(targetIndex, 0, folder);
+        }
+        result[i] = { ...f, subfolders: newSubfolders };
       }
-      const targetIndex = f.subfolders.findIndex((sf) => sf.id === targetId);
-      if (targetIndex === -1)
-        return { ...f, subfolders: [...f.subfolders, folder] };
-      const newSubfolders = [...f.subfolders];
-      newSubfolders.splice(targetIndex, 0, folder);
-      return { ...f, subfolders: newSubfolders };
+      return result;
     }
     const newSubfolders = insertFolderAtPosition(
       f.subfolders,
@@ -317,15 +305,13 @@ const insertFolderAtPosition = (
       targetId,
     );
     if (newSubfolders !== f.subfolders) {
-      changed = true;
-      return {
-        ...f,
-        subfolders: newSubfolders,
-      };
+      const result = [...folders];
+      result[i] = { ...f, subfolders: newSubfolders };
+      return result;
     }
-    return f;
-  });
-  return changed ? newFolders : folders;
+  }
+
+  return folders;
 };
 
 export const useFolderStore = create<FolderStore>()(
