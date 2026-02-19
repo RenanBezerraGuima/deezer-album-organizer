@@ -21,3 +21,7 @@
 ## 2025-05-21 - [Keyboard Shortcut Hints and Power-User Patterns]
 **Learning:** Introducing global keyboard shortcuts (e.g., 'S' for Settings, 'T' for Theme) significantly enhances power-user efficiency. Visually communicating these shortcuts via bracketed hints in labels and tooltips (e.g., 'Settings [S]') improves discoverability while ensuring they don't trigger during text input.
 **Action:** Accompany global keyboard shortcuts with visual bracketed hints in labels and titles, and ensure they are guarded against active input elements and modifier keys.
+
+## 2026-02-19 - [Keyboard Shortcuts for Primary Actions]
+**Learning:** Adding global keyboard shortcuts for primary actions (like 'N' for new collection) significantly improves power-user efficiency. Ensuring these shortcuts don't fire when focus is on INPUT, TEXTAREA, or SELECT elements is critical for a frustration-free experience.
+**Action:** Always accompany primary action buttons with keyboard shortcuts, visual bracketed hints, and robust input-focus guards.
