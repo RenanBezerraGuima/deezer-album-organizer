@@ -115,7 +115,7 @@ export function sanitizeAlbum(album: any): Album {
     artist: String(album.artist || 'Unknown Artist').slice(0, MAX_TEXT_LENGTH),
     imageUrl: sanitizeImageUrl(String(album.imageUrl || '')) || '/placeholder.svg',
     releaseDate: album.releaseDate ? String(album.releaseDate).slice(0, 50) : undefined,
-    totalTracks: Number(album.totalTracks) || 0,
+    totalTracks: Math.max(0, Math.min(1000, Number(album.totalTracks) || 0)),
     spotifyUrl: sanitizeUrl(album.spotifyUrl ? String(album.spotifyUrl) : undefined),
     externalUrl: sanitizeUrl(album.externalUrl ? String(album.externalUrl) : undefined),
   };

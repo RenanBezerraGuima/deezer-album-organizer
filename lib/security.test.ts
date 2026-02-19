@@ -201,6 +201,12 @@ describe('Security Utilities', () => {
       expect(sanitized.artist.length).toBe(200);
     });
 
+    it('should clamp totalTracks between 0 and 1000', () => {
+      expect(sanitizeAlbum({ totalTracks: 9999 } as any).totalTracks).toBe(1000);
+      expect(sanitizeAlbum({ totalTracks: -5 } as any).totalTracks).toBe(0);
+      expect(sanitizeAlbum({ totalTracks: Infinity } as any).totalTracks).toBe(1000);
+    });
+
     it('should sanitize all URL fields in an album', () => {
       const album = {
         id: '1',
