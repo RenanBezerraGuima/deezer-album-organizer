@@ -73,35 +73,37 @@ const AlbumCanvasItem = React.memo(function AlbumCanvasItem({
 /**
  * Performance: Extracting the list into a memoized component allows React to skip
  * the entire O(Visible) reconciliation of the album list during panning.
- * When panning, 'visibleAlbums' is stable (due to throttled filtering) and
- * 'draggedAlbum' is null, enabling a complete skip of this component's re-render.
+ * When panning, 'visibleAlbums' is stable (due to throttled filtering).
+ *
+ * By passing only 'draggedAlbumId' (which is stable during a drag operation)
+ * instead of the full dragged album state (which updates positions),
+ * this entire list can skip re-renders while an album is being moved.
  */
 const AlbumCanvasList = React.memo(function AlbumCanvasList({
   visibleAlbums,
   folderId,
-  draggedAlbum,
+  draggedAlbumId,
   onPointerDown,
 }: {
   visibleAlbums: Album[];
   folderId: string;
-  draggedAlbum: { id: string; currentPos: AlbumPosition } | null;
+  draggedAlbumId: string | null | undefined;
   onPointerDown: (event: React.PointerEvent<HTMLDivElement>, album: Album) => void;
 }) {
   return (
     <>
       {visibleAlbums.map((album) => {
-        const isDragging = draggedAlbum?.id === album.id;
-        const position = isDragging
-          ? draggedAlbum.currentPos
-          : (album.position ?? { x: 0, y: 0 });
+        // Skip rendering the dragged album in the list. It will be rendered
+        // as a standalone item in the parent to avoid O(Visible) re-renders.
+        if (album.id === draggedAlbumId) return null;
 
         return (
           <AlbumCanvasItem
             key={album.id}
             album={album}
             folderId={folderId}
-            isDragging={isDragging}
-            position={position}
+            isDragging={false}
+            position={album.position ?? { x: 0, y: 0 }}
             onPointerDown={onPointerDown}
           />
         );
@@ -124,7 +126,7 @@ export function AlbumCanvas({ albums, folderId }: AlbumCanvasProps) {
 
   const [isPanning, setIsPanning] = useState(false);
   const [draggedAlbum, setDraggedAlbum] = useState<{
-    id: string;
+    album: Album;
     initialPos: AlbumPosition;
     currentPos: AlbumPosition;
   } | null>(null);
@@ -162,7 +164,7 @@ export function AlbumCanvas({ albums, folderId }: AlbumCanvasProps) {
     const result = albums.filter((album) => {
       // Always include the dragged album so it doesn't pop out of existence
       // if moved out of its initial world-space bounds while dragging.
-      if (album.id === draggedAlbum?.id) return true;
+      if (album.id === draggedAlbum?.album.id) return true;
       const pos = album.position ?? { x: 0, y: 0 };
       return isAlbumVisibleInWorld(pos, bounds, DEFAULT_CARD_SIZE);
     });
@@ -171,7 +173,7 @@ export function AlbumCanvas({ albums, folderId }: AlbumCanvasProps) {
     lastAlbumsRef.current = albums;
     lastVisibleAlbumsRef.current = result;
     return result;
-  }, [albums, camera, draggedAlbum?.id]);
+  }, [albums, camera, draggedAlbum?.album.id]);
 
   const startPan = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
     if ((event.target as HTMLElement).closest('[data-album-card]')) {
@@ -237,7 +239,7 @@ export function AlbumCanvas({ albums, folderId }: AlbumCanvasProps) {
     const initial = album.position ?? { x: 0, y: 0 };
     const zoom = cameraRef.current.zoom;
 
-    setDraggedAlbum({ id: album.id, initialPos: initial, currentPos: initial });
+    setDraggedAlbum({ album, initialPos: initial, currentPos: initial });
 
     const move = (moveEvent: PointerEvent) => {
       const deltaX = (moveEvent.clientX - startX) / zoom;
@@ -278,9 +280,18 @@ export function AlbumCanvas({ albums, folderId }: AlbumCanvasProps) {
         <AlbumCanvasList
           visibleAlbums={visibleAlbums}
           folderId={folderId}
-          draggedAlbum={draggedAlbum}
+          draggedAlbumId={draggedAlbum?.album.id}
           onPointerDown={startAlbumDrag}
         />
+        {draggedAlbum && (
+          <AlbumCanvasItem
+            album={draggedAlbum.album}
+            folderId={folderId}
+            isDragging={true}
+            position={draggedAlbum.currentPos}
+            onPointerDown={startAlbumDrag}
+          />
+        )}
       </div>
     </div>
   );
