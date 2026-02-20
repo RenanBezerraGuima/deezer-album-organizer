@@ -319,7 +319,11 @@ export function AlbumSearch({ isMobile, onMenuClick }: AlbumSearchProps) {
       e.preventDefault();
       handleAddAlbum(results[activeIndex]);
     } else if (e.key === 'Escape') {
-      setIsOpen(false);
+      if (isOpen) {
+        setIsOpen(false);
+      } else if (query) {
+        clearSearch();
+      }
     }
   };
 

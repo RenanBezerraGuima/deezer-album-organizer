@@ -20,7 +20,7 @@ export function MobileHeader({ onMenuClick }: MobileHeaderProps) {
                     className="h-10 w-10 border-2 border-transparent hover:border-border rounded-none"
                     aria-label="Open menu"
                 >
-                    <Menu className="h-6 w-6" />
+                    <Menu className="h-6 w-6" aria-hidden="true" />
                 </Button>
             </div>
 
@@ -38,7 +38,7 @@ export function MobileHeader({ onMenuClick }: MobileHeaderProps) {
                     aria-label="Settings [S]"
                     aria-keyshortcuts="s"
                 >
-                    <Settings className="h-4 w-4" />
+                    <Settings className="h-4 w-4" aria-hidden="true" />
                 </Button>
             </div>
         </header>
