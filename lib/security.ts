@@ -1,4 +1,4 @@
-import type { Album, Theme, AlbumViewMode, StreamingProvider, GeistFont } from './types';
+import type { Album, Folder, Theme, AlbumViewMode, StreamingProvider, GeistFont } from './types';
 import { THEMES, VIEW_MODES, STREAMING_PROVIDERS, GEIST_FONTS } from './types';
 
 const ALLOWED_PROTOCOLS = ['https:'];
@@ -107,9 +107,11 @@ export function isValidStreamingProvider(provider: any): provider is StreamingPr
  * Centralized sanitization for Album objects.
  * Truncates text fields and sanitizes all URLs.
  */
-export function sanitizeAlbum(album: any): Album {
-  return {
-    id: String(album.id || '').slice(0, 100),
+export function sanitizeAlbum(album: any, regenerateId = false): Album {
+  const id = regenerateId ? crypto.randomUUID() : String(album.id || crypto.randomUUID()).slice(0, 100);
+
+  const sanitized: Album = {
+    id,
     spotifyId: album.spotifyId ? String(album.spotifyId).slice(0, 100) : undefined,
     name: String(album.name || 'Unknown Album').slice(0, MAX_TEXT_LENGTH),
     artist: String(album.artist || 'Unknown Artist').slice(0, MAX_TEXT_LENGTH),
@@ -118,5 +120,38 @@ export function sanitizeAlbum(album: any): Album {
     totalTracks: Math.max(0, Math.min(1000, Number(album.totalTracks) || 0)),
     spotifyUrl: sanitizeUrl(album.spotifyUrl ? String(album.spotifyUrl) : undefined),
     externalUrl: sanitizeUrl(album.externalUrl ? String(album.externalUrl) : undefined),
+  };
+
+  if (album.position && typeof album.position.x === 'number' && typeof album.position.y === 'number') {
+    sanitized.position = { x: Number(album.position.x), y: Number(album.position.y) };
+  }
+
+  return sanitized;
+}
+
+/**
+ * Recursively sanitize a Folder structure.
+ * Supports optional ID regeneration for imports and a custom album mapper.
+ */
+export function sanitizeFolder(
+  folder: any,
+  regenerateIds = false,
+  parentId: string | null = folder.parentId ? String(folder.parentId).slice(0, 100) : null,
+  albumMapper: (album: Album, index: number) => Album = (a) => a
+): Folder {
+  const id = regenerateIds ? crypto.randomUUID() : String(folder.id || '').slice(0, 100);
+
+  return {
+    id,
+    name: String(folder.name || 'Untitled').slice(0, 100),
+    parentId,
+    albums: Array.isArray(folder.albums)
+      ? folder.albums.map((a: any, index: number) => albumMapper(sanitizeAlbum(a, regenerateIds), index))
+      : [],
+    subfolders: Array.isArray(folder.subfolders)
+      ? folder.subfolders.map((sf: any) => sanitizeFolder(sf, regenerateIds, id, albumMapper))
+      : [],
+    isExpanded: Boolean(folder.isExpanded),
+    viewMode: isValidViewMode(folder.viewMode) ? folder.viewMode : 'grid',
   };
 }
