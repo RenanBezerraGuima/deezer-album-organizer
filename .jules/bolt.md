@@ -49,3 +49,7 @@
 ## 2025-05-28 - [Early-Exit Tree Traversal and Recursive Breadcrumb Caching]
 **Learning:** Standard `map`-based tree updates always visit every node in a level even if the target has been found. Switching to `for` loops with early returns reduces traversal overhead. Additionally, `getBreadcrumb` benefits from recursive caching; by calling itself recursively, it populates the `WeakMap` cache for stable subtrees, turning O(N) traversals into O(depth) on subsequent state versions.
 **Action:** Use `for` loops for single-target tree mutations. Ensure recursive tree lookups call themselves to maximize cache hits across structural sharing updates.
+
+## 2026-03-27 - [Isolating Volatile List Items for Smooth Dragging]
+**Learning:** When an item in a large list is being moved or updated at high frequency (e.g., canvas dragging), passing the entire volatile state to the list component forces full reconciliation on every frame. Lifting the active item out of the list and passing only a stable identifier (like `id`) allows the memoized list to completely skip re-rendering during the interaction.
+**Action:** Always lift high-frequency volatile items out of stable list components. Render the active/dragged item separately in the parent.
