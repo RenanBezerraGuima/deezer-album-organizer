@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useState } from 'react';
-import { Play, Trash2, Loader2 } from 'lucide-react';
+import { Play, Trash2, Copy, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -12,6 +12,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu';
 import { useFolderStore } from '@/lib/store';
 import type { Album } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -23,6 +30,8 @@ interface AlbumCardProps {
 
 export const AlbumCard = React.memo(function AlbumCard({ album, folderId }: AlbumCardProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+  const streamingProvider = useFolderStore(state => state.streamingProvider) || 'deezer';
 
   const handleRemove = () => {
     useFolderStore.getState().removeAlbumFromFolder(folderId, album.id);
@@ -43,13 +52,21 @@ export const AlbumCard = React.memo(function AlbumCard({ album, folderId }: Albu
     }
   };
 
+  const copyDetails = () => {
+    navigator.clipboard.writeText(`${album.artist} - ${album.name}`);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  };
+
   return (
-    <div
-      className={cn(
-        'group relative bg-card overflow-hidden border-2 border-border transition-all duration-200 hover:brutalist-shadow hover:-translate-x-1 hover:-translate-y-1 active:translate-x-0 active:translate-y-0'
-      )}
-      style={{ borderRadius: 'var(--radius)' }}
-    >
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
+        <div
+          className={cn(
+            'group relative bg-card overflow-hidden border-2 border-border transition-all duration-200 hover:brutalist-shadow hover:-translate-x-1 hover:-translate-y-1 active:translate-x-0 active:translate-y-0'
+          )}
+          style={{ borderRadius: 'var(--radius)' }}
+        >
       <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity z-10">
         <Button
           size="icon"
@@ -122,8 +139,11 @@ export const AlbumCard = React.memo(function AlbumCard({ album, folderId }: Albu
         <h3 className="font-medium text-sm text-foreground truncate" title={album.name} style={{ fontFamily: 'var(--font-display)' }}>
           {album.name}
         </h3>
-        <p className="text-[10px] text-muted-foreground truncate mt-0.5" title={album.artist}>
-          {album.artist}
+        <p className={cn(
+          "text-[10px] truncate mt-0.5 transition-colors duration-300",
+          isCopied ? "text-primary font-bold" : "text-muted-foreground"
+        )} title={album.artist}>
+          {isCopied ? "Copied to clipboard!" : album.artist}
         </p>
         <div className="flex items-center gap-1 mt-1 text-[10px] text-muted-foreground" style={{ fontFamily: 'var(--font-mono)' }}>
           <span className="bg-foreground text-background px-1 font-medium">
@@ -139,6 +159,26 @@ export const AlbumCard = React.memo(function AlbumCard({ album, folderId }: Albu
           <span>{album.totalTracks} tracks</span>
         </div>
       </div>
-    </div>
+        </div>
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem onClick={copyDetails}>
+          <Copy className="mr-2 h-4 w-4" />
+          Copy Details
+        </ContextMenuItem>
+        <ContextMenuItem onClick={handlePlay}>
+          <ExternalLink className="mr-2 h-4 w-4" />
+          Open in {streamingProvider.toUpperCase()}
+        </ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem
+          onClick={() => setIsDeleteDialogOpen(true)}
+          className="text-destructive focus:text-destructive focus:bg-destructive/10"
+        >
+          <Trash2 className="mr-2 h-4 w-4" />
+          Remove Album
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 });

@@ -624,7 +624,7 @@ export function FolderTree() {
             aria-label="Settings [S]"
             aria-keyshortcuts="s"
           >
-            <Settings className="h-4 w-4" />
+            <Settings className="h-4 w-4" aria-hidden="true" />
           </Button>
           <Button
             size="icon"
@@ -635,7 +635,7 @@ export function FolderTree() {
             aria-label="Create collection [N]"
             aria-keyshortcuts="n"
           >
-            <FolderPlus className="h-4 w-4" />
+            <FolderPlus className="h-4 w-4" aria-hidden="true" />
           </Button>
         </div>
       </div>
