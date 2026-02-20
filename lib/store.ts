@@ -5,6 +5,7 @@ import {
   sanitizeUrl,
   sanitizeImageUrl,
   sanitizeAlbum,
+  sanitizeFolder,
   isValidTheme,
   isValidViewMode,
   isValidStreamingProvider,
@@ -548,39 +549,11 @@ export const useFolderStore = create<FolderStore>()(
 
       importFolders: (importedFolders) => {
         const state = get();
+        if (!Array.isArray(importedFolders)) return;
 
-        const sanitizeAndRegenerate = (
-          folders: any[],
-          parentId: string | null,
-        ): Folder[] => {
-          return folders.map((folder) => {
-            const newId = generateId();
-
-            // Sanitize albums
-            const sanitizedAlbums: Album[] = (folder.albums || []).map(
-              (album: any, index: number) =>
-                normalizeAlbumPosition(
-                  sanitizeAlbum({
-                    ...album,
-                    id: album.id || generateId(),
-                  }),
-                  index,
-                ),
-            );
-
-            return {
-              id: newId,
-              name: String(folder.name || "Untitled").slice(0, 100),
-              parentId,
-              albums: sanitizedAlbums,
-              subfolders: sanitizeAndRegenerate(folder.subfolders || [], newId),
-              isExpanded: Boolean(folder.isExpanded),
-              viewMode: isValidViewMode(folder.viewMode) ? folder.viewMode : "grid",
-            };
-          });
-        };
-
-        const processedImported = sanitizeAndRegenerate(importedFolders, null);
+        const processedImported = importedFolders.map((f: any) =>
+          sanitizeFolder(f, true, null, normalizeAlbumPosition),
+        );
         const existingFolders = [...state.folders];
 
         const existingNames = new Set(existingFolders.map((f) => f.name));
@@ -666,6 +639,19 @@ export const useFolderStore = create<FolderStore>()(
       onRehydrateStorage: () => (state) => {
         if (state) {
           // Defense-in-depth: Validate rehydrated state from untrusted localStorage
+          if (Array.isArray(state.folders)) {
+            state.folders = state.folders.map((f: any) => sanitizeFolder(f));
+          } else {
+            state.folders = [];
+          }
+
+          if (
+            state.selectedFolderId &&
+            typeof state.selectedFolderId !== "string"
+          ) {
+            state.selectedFolderId = null;
+          }
+
           if (!isValidTheme(state.theme)) state.theme = "industrial";
           if (!isValidStreamingProvider(state.streamingProvider))
             state.streamingProvider = "deezer";

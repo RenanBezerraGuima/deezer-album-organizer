@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useFolderStore } from './store';
-import { sanitizeUrl, sanitizeImageUrl, sanitizeAlbum } from './security';
+import { sanitizeUrl, sanitizeImageUrl, sanitizeAlbum, sanitizeFolder } from './security';
 
 describe('Security: Input Validation', () => {
   beforeEach(() => {
@@ -223,17 +223,117 @@ describe('Security Utilities', () => {
       expect(sanitized.spotifyUrl).toBeUndefined();
     });
 
-    it('should handle missing or invalid fields gracefully', () => {
+    it('should handle missing or invalid fields gracefully and provide fallback ID', () => {
       const album = {
-        id: '1',
+        id: '',
         // missing name, artist
         totalTracks: 'invalid'
       };
 
       const sanitized = sanitizeAlbum(album);
+      expect(sanitized.id).toBeDefined();
+      expect(sanitized.id.length).toBeGreaterThan(0);
       expect(sanitized.name).toBe('Unknown Album');
       expect(sanitized.artist).toBe('Unknown Artist');
       expect(sanitized.totalTracks).toBe(0);
+    });
+
+    it('should regenerate album IDs when regenerateId is true', () => {
+      const album = { id: 'old-id', name: 'Test', artist: 'Test' };
+      const sanitized = sanitizeAlbum(album, true);
+      expect(sanitized.id).not.toBe('old-id');
+      expect(sanitized.id.length).toBeGreaterThan(0);
+    });
+
+    it('should preserve and sanitize the position field if present', () => {
+      const album = {
+        id: '1',
+        name: 'Test',
+        artist: 'Test',
+        position: { x: 100, y: 200, malicious: 'property' }
+      };
+
+      const sanitized = sanitizeAlbum(album);
+      expect(sanitized.position).toEqual({ x: 100, y: 200 });
+      expect(sanitized.position).not.toHaveProperty('malicious');
+    });
+  });
+
+  describe('sanitizeFolder', () => {
+    it('should recursively sanitize folder names and nested albums', () => {
+      const longName = 'F'.repeat(200);
+      const folder = {
+        id: 'f1',
+        name: longName,
+        albums: [
+          {
+            id: 'a1',
+            name: 'Album 1',
+            artist: 'Artist 1',
+            imageUrl: 'javascript:alert(1)'
+          }
+        ],
+        subfolders: [
+          {
+            id: 'f2',
+            name: 'Subfolder',
+            albums: []
+          }
+        ]
+      };
+
+      const sanitized = sanitizeFolder(folder);
+      expect(sanitized.name.length).toBe(100);
+      expect(sanitized.albums[0].imageUrl).toBe('/placeholder.svg');
+      expect(sanitized.subfolders[0].parentId).toBe('f1');
+      expect(sanitized.subfolders[0].name).toBe('Subfolder');
+    });
+
+    it('should regenerate IDs and update parentIds when regenerateIds is true', () => {
+      const folder = {
+        id: 'old-root',
+        name: 'Root',
+        albums: [{ id: 'old-album', name: 'Album', artist: 'Artist' }],
+        subfolders: [
+          {
+            id: 'old-sub',
+            name: 'Sub',
+            albums: []
+          }
+        ]
+      };
+
+      const sanitized = sanitizeFolder(folder, true);
+      expect(sanitized.id).not.toBe('old-root');
+      expect(sanitized.albums[0].id).not.toBe('old-album');
+      expect(sanitized.subfolders[0].id).not.toBe('old-sub');
+      expect(sanitized.subfolders[0].parentId).toBe(sanitized.id);
+    });
+
+    it('should use the provided albumMapper', () => {
+      const folder = {
+        id: 'f1',
+        name: 'Test',
+        albums: [{ id: 'a1', name: 'Album', artist: 'Artist' }]
+      };
+      const mapper = (a: any) => ({ ...a, name: 'Mapped' });
+
+      const sanitized = sanitizeFolder(folder, false, null, mapper);
+      expect(sanitized.albums[0].name).toBe('Mapped');
+    });
+
+    it('should filter out unknown properties', () => {
+      const folder = {
+        id: 'f1',
+        name: 'Test',
+        malicious: 'property',
+        albums: [],
+        subfolders: []
+      };
+
+      const sanitized = sanitizeFolder(folder);
+      expect(sanitized).not.toHaveProperty('malicious');
+      expect(sanitized.name).toBe('Test');
     });
   });
 });
