@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { useFolderStore } from './store';
+import { useFolderStore, getBreadcrumb } from './store';
 
 describe('useFolderStore', () => {
   beforeEach(() => {
@@ -223,6 +223,26 @@ describe('useFolderStore', () => {
     const longToken = 'A'.repeat(2000);
     setSpotifyToken(longToken, 3600, Date.now());
     expect(useFolderStore.getState().spotifyToken?.length).toBe(1024);
+  });
+
+  it('should return breadcrumb path with ids and names', () => {
+    const { createFolder } = useFolderStore.getState();
+
+    createFolder('Root', null);
+    const rootId = useFolderStore.getState().folders[0].id;
+
+    createFolder('Child', rootId);
+    const childId = useFolderStore.getState().folders[0].subfolders[0].id;
+
+    createFolder('Grandchild', childId);
+    const grandchildId = useFolderStore.getState().folders[0].subfolders[0].subfolders[0].id;
+
+    const breadcrumb = getBreadcrumb(useFolderStore.getState().folders, grandchildId);
+
+    expect(breadcrumb).toHaveLength(3);
+    expect(breadcrumb[0]).toEqual({ id: rootId, name: 'Root' });
+    expect(breadcrumb[1]).toEqual({ id: childId, name: 'Child' });
+    expect(breadcrumb[2]).toEqual({ id: grandchildId, name: 'Grandchild' });
   });
 
   it('should validate state during rehydration', () => {

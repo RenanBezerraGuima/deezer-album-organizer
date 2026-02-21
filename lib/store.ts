@@ -119,7 +119,10 @@ export const applySyncState = (incoming: SyncState) => {
 // Caches for tree traversal to avoid O(N) operations during re-renders or state updates.
 // WeakMap uses the 'folders' array reference as a key, ensuring cache is invalidated when tree changes.
 const findCache = new WeakMap<Folder[], Map<string, Folder | null>>();
-const breadcrumbCache = new WeakMap<Folder[], Map<string, string[]>>();
+const breadcrumbCache = new WeakMap<
+  Folder[],
+  Map<string, { id: string; name: string }[]>
+>();
 
 export const findFolder = (folders: Folder[], id: string): Folder | null => {
   let cache = findCache.get(folders);
@@ -149,7 +152,7 @@ export const findFolder = (folders: Folder[], id: string): Folder | null => {
 export const getBreadcrumb = (
   folders: Folder[],
   targetId: string,
-): string[] => {
+): { id: string; name: string }[] => {
   let cache = breadcrumbCache.get(folders);
   if (!cache) {
     cache = new Map();
@@ -159,13 +162,13 @@ export const getBreadcrumb = (
 
   for (const folder of folders) {
     if (folder.id === targetId) {
-      const result = [folder.name];
+      const result = [{ id: folder.id, name: folder.name }];
       cache.set(targetId, result);
       return result;
     }
     const subPath = getBreadcrumb(folder.subfolders, targetId);
     if (subPath.length > 0) {
-      const result = [folder.name, ...subPath];
+      const result = [{ id: folder.id, name: folder.name }, ...subPath];
       cache.set(targetId, result);
       return result;
     }
