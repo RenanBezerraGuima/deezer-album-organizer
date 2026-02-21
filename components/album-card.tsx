@@ -28,10 +28,31 @@ interface AlbumCardProps {
   folderId: string;
 }
 
+/**
+ * Performance: Separate component for the provider-specific menu item.
+ * By moving the 'streamingProvider' subscription here, we ensure that
+ * changes to the global provider setting only re-render this specific menu item
+ * (and only when the context menu is actually open), instead of re-rendering
+ * all 1000s of AlbumCard instances in the grid.
+ */
+const OpenInProviderMenuItem = React.memo(function OpenInProviderMenuItem({
+  onPlay,
+}: {
+  onPlay: (e: React.MouseEvent) => void;
+}) {
+  const streamingProvider =
+    useFolderStore((state) => state.streamingProvider) || 'deezer';
+  return (
+    <ContextMenuItem onClick={onPlay}>
+      <ExternalLink className="mr-2 h-4 w-4" />
+      Open in {streamingProvider.toUpperCase()}
+    </ContextMenuItem>
+  );
+});
+
 export const AlbumCard = React.memo(function AlbumCard({ album, folderId }: AlbumCardProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  const streamingProvider = useFolderStore(state => state.streamingProvider) || 'deezer';
 
   const handleRemove = () => {
     useFolderStore.getState().removeAlbumFromFolder(folderId, album.id);
@@ -43,6 +64,8 @@ export const AlbumCard = React.memo(function AlbumCard({ album, folderId }: Albu
     if (album.externalUrl) {
       window.open(album.externalUrl, '_blank', 'noopener,noreferrer');
     } else {
+      // Performance: Accessing provider via getState() inside the handler
+      // avoids a reactive subscription in the main component.
       const { streamingProvider } = useFolderStore.getState();
       const searchQuery = `${album.name} ${album.artist}`;
       const url = streamingProvider === 'apple'
@@ -166,10 +189,7 @@ export const AlbumCard = React.memo(function AlbumCard({ album, folderId }: Albu
           <Copy className="mr-2 h-4 w-4" />
           Copy Details
         </ContextMenuItem>
-        <ContextMenuItem onClick={handlePlay}>
-          <ExternalLink className="mr-2 h-4 w-4" />
-          Open in {streamingProvider.toUpperCase()}
-        </ContextMenuItem>
+        <OpenInProviderMenuItem onPlay={handlePlay} />
         <ContextMenuSeparator />
         <ContextMenuItem
           onClick={() => setIsDeleteDialogOpen(true)}

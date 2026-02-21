@@ -11,6 +11,54 @@ import { AlbumCanvas } from './album-canvas';
 import type { Album } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
+/**
+ * Performance: Memoized item wrapper for the grid.
+ * By using granular boolean props like 'isDragged' and 'isDropTarget' instead of
+ * passing the raw indexes, we allow React to skip reconciliation for 99% of items
+ * when the drop target changes during a drag operation.
+ */
+const DraggableAlbumItem = React.memo(function DraggableAlbumItem({
+  album,
+  index,
+  folderId,
+  isDragged,
+  isDropTarget,
+  onDragStart,
+  onDragOver,
+  onDragLeave,
+  onDrop,
+  onDragEnd,
+}: {
+  album: Album;
+  index: number;
+  folderId: string;
+  isDragged: boolean;
+  isDropTarget: boolean;
+  onDragStart: (e: React.DragEvent, album: Album, index: number) => void;
+  onDragOver: (e: React.DragEvent, index: number) => void;
+  onDragLeave: () => void;
+  onDrop: (index: number) => void;
+  onDragEnd: () => void;
+}) {
+  return (
+    <div
+      draggable
+      onDragStart={(e) => onDragStart(e, album, index)}
+      onDragOver={(e) => onDragOver(e, index)}
+      onDragLeave={onDragLeave}
+      onDrop={() => onDrop(index)}
+      onDragEnd={onDragEnd}
+      className={cn(
+        'transition-all',
+        isDragged && 'opacity-50',
+        isDropTarget && 'ring-2 ring-primary ring-offset-2 rounded-none'
+      )}
+    >
+      <AlbumCard album={album} folderId={folderId} />
+    </div>
+  );
+});
+
 export function AlbumGrid({ isMobile }: { isMobile?: boolean }) {
   // Use granular selectors to avoid re-renders when unrelated parts of the store change
   const selectedFolderId = useFolderStore(state => state.selectedFolderId);
@@ -46,38 +94,43 @@ export function AlbumGrid({ isMobile }: { isMobile?: boolean }) {
     );
   }
 
-  const handleDragStart = (e: React.DragEvent, album: Album, index: number) => {
-    useFolderStore.getState().setDraggedAlbum(album, selectedFolderId, index);
+  // Performance: Handlers are stabilized with useCallback and use getState()
+  // for store data to prevent re-rendering memoized DraggableAlbumItems.
+  const handleDragStart = useCallback((e: React.DragEvent, album: Album, index: number) => {
+    const { selectedFolderId, setDraggedAlbum } = useFolderStore.getState();
+    if (!selectedFolderId) return;
+    setDraggedAlbum(album, selectedFolderId, index);
     e.dataTransfer.setData('text/plain', album.id);
     e.dataTransfer.effectAllowed = 'move';
-  };
+  }, []);
 
-  const handleDragOver = (e: React.DragEvent, index: number) => {
+  const handleDragOver = useCallback((e: React.DragEvent, index: number) => {
     e.preventDefault();
+    const { draggedAlbumIndex } = useFolderStore.getState();
     // Optimization: Only update state if the drop target has actually changed.
     // This prevents redundant re-renders during high-frequency dragOver events.
-    if (draggedAlbumIndex !== null && draggedAlbumIndex !== index && dropIndex !== index) {
-      setDropIndex(index);
-    }
-  };
-
-  const handleDragLeave = () => {
-    setDropIndex(null);
-  };
-
-  const handleDrop = (index: number) => {
-    const { reorderAlbum, setDraggedAlbum } = useFolderStore.getState();
     if (draggedAlbumIndex !== null && draggedAlbumIndex !== index) {
+      setDropIndex(prev => prev !== index ? index : prev);
+    }
+  }, []);
+
+  const handleDragLeave = useCallback(() => {
+    setDropIndex(null);
+  }, []);
+
+  const handleDrop = useCallback((index: number) => {
+    const { selectedFolderId, draggedAlbumIndex, reorderAlbum, setDraggedAlbum } = useFolderStore.getState();
+    if (selectedFolderId && draggedAlbumIndex !== null && draggedAlbumIndex !== index) {
       reorderAlbum(selectedFolderId, draggedAlbumIndex, index);
     }
     setDraggedAlbum(null, null, null);
     setDropIndex(null);
-  };
+  }, []);
 
-  const handleDragEnd = () => {
+  const handleDragEnd = useCallback(() => {
     useFolderStore.getState().setDraggedAlbum(null, null, null);
     setDropIndex(null);
-  };
+  }, []);
 
   return (
     <div id="main-content" tabIndex={-1} className="flex flex-col h-full bg-background outline-none">
@@ -153,22 +206,19 @@ export function AlbumGrid({ isMobile }: { isMobile?: boolean }) {
             isMobile ? 'gap-2 p-2' : 'gap-4 p-4'
           )}>
             {selectedFolder.albums.map((album, index) => (
-              <div
+              <DraggableAlbumItem
                 key={album.id}
-                draggable
-                onDragStart={(e) => handleDragStart(e, album, index)}
-                onDragOver={(e) => handleDragOver(e, index)}
+                album={album}
+                index={index}
+                folderId={selectedFolderId}
+                isDragged={draggedAlbumIndex === index}
+                isDropTarget={dropIndex === index}
+                onDragStart={handleDragStart}
+                onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
-                onDrop={() => handleDrop(index)}
+                onDrop={handleDrop}
                 onDragEnd={handleDragEnd}
-                className={cn(
-                  'transition-all',
-                  draggedAlbumIndex === index && 'opacity-50',
-                  dropIndex === index && 'ring-2 ring-primary ring-offset-2 rounded-none'
-                )}
-              >
-                <AlbumCard album={album} folderId={selectedFolderId} />
-              </div>
+              />
             ))}
           </div>
         </ScrollArea>
