@@ -25,3 +25,7 @@
 ## 2025-05-22 - [Character Counter Noise Reduction]
 **Learning:** When inputs are already linked to character counters via aria-describedby, setting aria-live="polite" on the counter creates excessive noise for screen reader users. Using aria-hidden="true" on the visual counter while maintaining the aria-describedby link on the input provides the necessary context without the repetitive keystroke announcements.
 **Action:** Use aria-hidden="true" for visual character counters that are already properly linked to their parent inputs via aria-describedby to reduce accessibility noise.
+
+## 2026-02-15 - [Interactive Breadcrumb Navigation]
+**Learning:** Static breadcrumbs are a missed navigation opportunity. Transforming them into interactive links (or buttons) significantly improves the UX for hierarchical structures, providing a fast way to jump back to any ancestor without using the sidebar.
+**Action:** When displaying breadcrumbs for nested resources, always make parent segments clickable and include proper accessibility markers like `aria-current="page"` for the final segment.

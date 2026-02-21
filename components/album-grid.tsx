@@ -143,12 +143,23 @@ export function AlbumGrid({ isMobile }: { isMobile?: boolean }) {
           isMobile ? 'text-[9px]' : 'text-[10px]'
         )} style={{ fontFamily: 'var(--font-mono)' }}>
           <div className="flex items-center gap-2 min-w-0 overflow-hidden">
-            {breadcrumb.map((name, index) => (
-              <span key={index} className="flex items-center gap-2 shrink-0">
-                {index > 0 && <span>/</span>}
-                <span className={index === breadcrumb.length - 1 ? 'text-foreground font-semibold' : ''}>
-                  {name}
-                </span>
+            {breadcrumb.map((item, index) => (
+              <span key={item.id} className="flex items-center gap-2 shrink-0">
+                {index > 0 && <span aria-hidden="true" className="opacity-40">/</span>}
+                {index === breadcrumb.length - 1 ? (
+                  <span className="text-foreground font-semibold truncate" aria-current="page">
+                    {item.name}
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => useFolderStore.getState().setSelectedFolder(item.id)}
+                    className="hover:text-primary hover:underline transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary px-0.5 rounded-sm cursor-pointer"
+                    aria-label={`Go back to ${item.name}`}
+                  >
+                    {item.name}
+                  </button>
+                )}
               </span>
             ))}
           </div>
