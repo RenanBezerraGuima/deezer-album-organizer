@@ -207,6 +207,7 @@ describe('Security Utilities', () => {
       expect(sanitizeAlbum({ totalTracks: Infinity } as any).totalTracks).toBe(1000);
     });
 
+
     it('should sanitize all URL fields in an album', () => {
       const album = {
         id: '1',

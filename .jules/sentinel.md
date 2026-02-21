@@ -74,3 +74,8 @@
 **Vulnerability:** Application state (Theme, StreamingProvider) hydrated from untrusted localStorage without validation.
 **Learning:** Persisted state in local-first applications is an attack vector if a user is tricked into modifying localStorage or if an XSS exists elsewhere. Relying on setters is insufficient for security if hydration skips those checks.
 **Prevention:** Always implement validation logic in the store's hydration hook (e.g., Zustand's onRehydrateStorage) to ensure data integrity on startup.
+
+## 2026-03-25 - [Query Truncation Gap in Cached Search]
+**Vulnerability:** Search queries were truncated for cache keys but the original un-truncated query was passed to search functions, bypassing DoS protections.
+**Learning:** Validation wrappers must ensure that only the validated/transformed data is passed to downstream functions. Partial validation (e.g. for cache keys only) leaves internal systems or external APIs exposed to oversized inputs.
+**Prevention:** Always pass the sanitized/truncated version of inputs to downstream functions within wrappers or middlewares.
