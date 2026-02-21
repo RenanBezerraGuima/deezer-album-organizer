@@ -31,7 +31,7 @@ function withCache<T extends any[]>(
       return cached.data;
     }
 
-    const data = await fn(query, ...args);
+    const data = await fn(trimmedQuery, ...args);
 
     // Maintain cache size
     if (searchCache.size >= MAX_CACHE_SIZE) {
