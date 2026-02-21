@@ -53,3 +53,7 @@
 ## 2026-03-27 - [Isolating Volatile List Items for Smooth Dragging]
 **Learning:** When an item in a large list is being moved or updated at high frequency (e.g., canvas dragging), passing the entire volatile state to the list component forces full reconciliation on every frame. Lifting the active item out of the list and passing only a stable identifier (like `id`) allows the memoized list to completely skip re-rendering during the interaction.
 **Action:** Always lift high-frequency volatile items out of stable list components. Render the active/dragged item separately in the parent.
+
+## 2026-05-25 - [Minimizing Re-renders in Large Grids during Drag and Settings Changes]
+**Learning:** In large grids, every item subscribing to global settings (like `streamingProvider`) or the parent re-rendering on every drag step causes O(N) reconciliations. Extracting items into memoized components with granular boolean props (`isDropTarget`) and moving global subscriptions into lazy-rendered leaf components (like context menu items) reduces overhead to O(1) or O(Constant) for most updates. Stabilizing handlers with `useCallback` and `getState()` is crucial for this isolation to work.
+**Action:** Always lift high-frequency or global subscriptions out of large list items. Use memoized wrappers with minimal boolean props for list items.
