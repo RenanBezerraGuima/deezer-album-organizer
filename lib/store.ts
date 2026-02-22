@@ -342,7 +342,7 @@ export const useFolderStore = create<FolderStore>()(
         const newFolder: Folder = {
           id: generateId(),
           name: name.slice(0, 100),
-          parentId,
+          parentId: parentId ? String(parentId).slice(0, 100) : null,
           albums: [],
           subfolders: [],
           isExpanded: true,
@@ -384,7 +384,7 @@ export const useFolderStore = create<FolderStore>()(
       },
 
       setSelectedFolder: (id) => {
-        set({ selectedFolderId: id, lastUpdated: Date.now() });
+        set({ selectedFolderId: id ? String(id).slice(0, 100) : null, lastUpdated: Date.now() });
       },
 
       moveFolder: (folderId, newParentId, targetFolderId) => {
@@ -607,8 +607,8 @@ export const useFolderStore = create<FolderStore>()(
       setSpotifyToken: (token, expiresIn, timestamp) => {
         set({
           spotifyToken: token ? String(token).slice(0, 1024) : null,
-          spotifyTokenExpiry: expiresIn,
-          spotifyTokenTimestamp: timestamp,
+          spotifyTokenExpiry: typeof expiresIn === 'number' && Number.isFinite(expiresIn) ? expiresIn : null,
+          spotifyTokenTimestamp: typeof timestamp === 'number' && Number.isFinite(timestamp) ? timestamp : null,
           lastUpdated: Date.now(),
         });
       },
@@ -648,12 +648,10 @@ export const useFolderStore = create<FolderStore>()(
             state.folders = [];
           }
 
-          if (
-            state.selectedFolderId &&
-            typeof state.selectedFolderId !== "string"
-          ) {
-            state.selectedFolderId = null;
-          }
+          state.selectedFolderId = typeof state.selectedFolderId === 'string' ? state.selectedFolderId.slice(0, 100) : null;
+          state.hasSetPreference = Boolean(state.hasSetPreference);
+          state.spotifyTokenExpiry = typeof state.spotifyTokenExpiry === 'number' && Number.isFinite(state.spotifyTokenExpiry) ? state.spotifyTokenExpiry : null;
+          state.spotifyTokenTimestamp = typeof state.spotifyTokenTimestamp === 'number' && Number.isFinite(state.spotifyTokenTimestamp) ? state.spotifyTokenTimestamp : null;
 
           if (!isValidTheme(state.theme)) state.theme = "industrial";
           if (!isValidStreamingProvider(state.streamingProvider))

@@ -338,3 +338,35 @@ describe('Security Utilities', () => {
     });
   });
 });
+
+describe('Security: State Hydration', () => {
+  it('should truncate selectedFolderId during rehydration', () => {
+    // We can test the rehydration logic by manually calling the hook
+    const onRehydrate = (useFolderStore.persist as any).getOptions().onRehydrateStorage;
+    const callback = onRehydrate(useFolderStore.getState());
+
+    const longId = 'A'.repeat(200);
+    const state: any = { selectedFolderId: longId };
+    callback(state);
+
+    expect(state.selectedFolderId.length).toBe(100);
+    expect(state.selectedFolderId).toBe('A'.repeat(100));
+  });
+
+  it('should validate spotifyTokenExpiry during rehydration', () => {
+    const onRehydrate = (useFolderStore.persist as any).getOptions().onRehydrateStorage;
+    const callback = onRehydrate(useFolderStore.getState());
+
+    const state: any = { spotifyTokenExpiry: 'invalid' };
+    callback(state);
+    expect(state.spotifyTokenExpiry).toBeNull();
+
+    const state2: any = { spotifyTokenExpiry: Infinity };
+    callback(state2);
+    expect(state2.spotifyTokenExpiry).toBeNull();
+
+    const state3: any = { spotifyTokenExpiry: 3600 };
+    callback(state3);
+    expect(state3.spotifyTokenExpiry).toBe(3600);
+  });
+});
