@@ -79,3 +79,13 @@
 **Vulnerability:** Search queries were truncated for cache keys but the original un-truncated query was passed to search functions, bypassing DoS protections.
 **Learning:** Validation wrappers must ensure that only the validated/transformed data is passed to downstream functions. Partial validation (e.g. for cache keys only) leaves internal systems or external APIs exposed to oversized inputs.
 **Prevention:** Always pass the sanitized/truncated version of inputs to downstream functions within wrappers or middlewares.
+
+## 2026-03-30 - [Asymmetric State Hardening]
+**Vulnerability:** Core application state (selected IDs, token metadata) was validated in setters but skipped during hydration from localStorage.
+**Learning:** Hardening setters provides runtime safety but leaves the application vulnerable to "time-of-check to time-of-use" style attacks where malicious state is injected directly into storage. Validation must be symmetric across the entire lifecycle: from initial set, to persistence, to rehydration.
+**Prevention:** Implement strict type and length validation in the store's hydration hook () for ALL persisted fields, not just the complex ones like folder trees. Use explicit  and  checks to prevent coercion-based logic bypasses.
+
+## 2026-03-30 - [Asymmetric State Hardening]
+**Vulnerability:** Core application state (selected IDs, token metadata) was validated in setters but skipped during hydration from localStorage.
+**Learning:** Hardening setters provides runtime safety but leaves the application vulnerable to "time-of-check to time-of-use" style attacks where malicious state is injected directly into storage. Validation must be symmetric across the entire lifecycle: from initial set, to persistence, to rehydration.
+**Prevention:** Implement strict type and length validation in the store's hydration hook (`onRehydrateStorage`) for ALL persisted fields, not just the complex ones like folder trees. Use explicit `typeof` and `Number.isFinite` checks to prevent coercion-based logic bypasses.
