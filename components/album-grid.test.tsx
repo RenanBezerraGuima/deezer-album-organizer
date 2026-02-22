@@ -34,7 +34,7 @@ describe('AlbumGrid spatial mode toggle', () => {
 
     render(<AlbumGrid />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Switch to canvas view' }));
+    fireEvent.click(screen.getByRole('button', { name: /Switch to canvas view/i }));
 
     expect(screen.getByTestId('album-canvas')).toBeInTheDocument();
     const folder = useFolderStore.getState().folders.find(f => f.id === folderId);
@@ -71,5 +71,57 @@ describe('AlbumGrid spatial mode toggle', () => {
     render(<AlbumGrid />);
 
     expect(screen.getByTestId('album-canvas')).toBeInTheDocument();
+  });
+
+  it('Given a selected folder, when "V" key is pressed, then the view mode switches to canvas', () => {
+    const folderId = 'folder-1';
+
+    useFolderStore.setState({
+      selectedFolderId: folderId,
+      folders: [
+        {
+          id: folderId,
+          name: 'Favorites',
+          parentId: null,
+          isExpanded: true,
+          subfolders: [],
+          viewMode: 'grid',
+          albums: [],
+        },
+      ],
+    });
+
+    render(<AlbumGrid />);
+
+    fireEvent.keyDown(window, { key: 'v' });
+
+    const folder = useFolderStore.getState().folders.find(f => f.id === folderId);
+    expect(folder?.viewMode).toBe('canvas');
+  });
+
+  it('Given a selected folder in canvas mode, when "G" key is pressed, then the view mode switches to grid', () => {
+    const folderId = 'folder-1';
+
+    useFolderStore.setState({
+      selectedFolderId: folderId,
+      folders: [
+        {
+          id: folderId,
+          name: 'Favorites',
+          parentId: null,
+          isExpanded: true,
+          subfolders: [],
+          viewMode: 'canvas',
+          albums: [],
+        },
+      ],
+    });
+
+    render(<AlbumGrid />);
+
+    fireEvent.keyDown(window, { key: 'g' });
+
+    const folder = useFolderStore.getState().folders.find(f => f.id === folderId);
+    expect(folder?.viewMode).toBe('grid');
   });
 });
