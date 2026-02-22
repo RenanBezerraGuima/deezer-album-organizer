@@ -29,3 +29,7 @@
 ## 2026-02-15 - [Interactive Breadcrumb Navigation]
 **Learning:** Static breadcrumbs are a missed navigation opportunity. Transforming them into interactive links (or buttons) significantly improves the UX for hierarchical structures, providing a fast way to jump back to any ancestor without using the sidebar.
 **Action:** When displaying breadcrumbs for nested resources, always make parent segments clickable and include proper accessibility markers like `aria-current="page"` for the final segment.
+
+## 2026-02-22 - [Keyboard Shortcuts for View Modes]
+**Learning:** For application with distinct view modes (like Grid vs. Canvas), providing global keyboard shortcuts significantly improves navigation efficiency for power users. Including these shortcuts in tooltips and ARIA labels makes them discoverable without cluttering the primary UI.
+**Action:** Always implement discoverable keyboard shortcuts for primary view toggles and include the shortcut hint (e.g., [G]) in the element's title and aria-label.

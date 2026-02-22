@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Music, Grid2X2, Orbit, Search } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 import { Button } from '@/components/ui/button';
@@ -76,23 +76,25 @@ export function AlbumGrid({ isMobile }: { isMobile?: boolean }) {
   const albumViewMode = selectedFolder?.viewMode || 'grid';
   const [dropIndex, setDropIndex] = useState<number | null>(null);
 
-  if (!selectedFolderId) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full text-muted-foreground tracking-tighter" style={{ fontFamily: 'var(--font-body)' }}>
-        <Music className="h-16 w-16 mb-4 opacity-10" />
-        <p className="text-lg font-medium" style={{ fontFamily: 'var(--font-display)' }}>No collection selected</p>
-        <p className="text-xs mt-1" style={{ fontFamily: 'var(--font-mono)' }}>Select a catalog entry to begin</p>
-      </div>
-    );
-  }
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isInputActive = ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName || '');
+      const isContentEditable = (document.activeElement as HTMLElement)?.isContentEditable;
 
-  if (!selectedFolder) {
-    return (
-      <div className="flex items-center justify-center h-full text-muted-foreground" style={{ fontFamily: 'var(--font-mono)' }}>
-        <p>Error: Collection not found</p>
-      </div>
-    );
-  }
+      if (!isInputActive && !isContentEditable && !e.metaKey && !e.ctrlKey && !e.altKey && selectedFolderId) {
+        if (e.key.toLowerCase() === 'g') {
+          e.preventDefault();
+          useFolderStore.getState().setFolderViewMode(selectedFolderId, 'grid');
+        } else if (e.key.toLowerCase() === 'v') {
+          e.preventDefault();
+          useFolderStore.getState().setFolderViewMode(selectedFolderId, 'canvas');
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedFolderId]);
 
   // Performance: Handlers are stabilized with useCallback and use getState()
   // for store data to prevent re-rendering memoized DraggableAlbumItems.
@@ -132,6 +134,24 @@ export function AlbumGrid({ isMobile }: { isMobile?: boolean }) {
     setDropIndex(null);
   }, []);
 
+  if (!selectedFolderId) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-muted-foreground tracking-tighter" style={{ fontFamily: 'var(--font-body)' }}>
+        <Music className="h-16 w-16 mb-4 opacity-10" />
+        <p className="text-lg font-medium" style={{ fontFamily: 'var(--font-display)' }}>No collection selected</p>
+        <p className="text-xs mt-1" style={{ fontFamily: 'var(--font-mono)' }}>Select a catalog entry to begin</p>
+      </div>
+    );
+  }
+
+  if (!selectedFolder) {
+    return (
+      <div className="flex items-center justify-center h-full text-muted-foreground" style={{ fontFamily: 'var(--font-mono)' }}>
+        <p>Error: Collection not found</p>
+      </div>
+    );
+  }
+
   return (
     <div id="main-content" tabIndex={-1} className="flex flex-col h-full bg-background outline-none">
       <div className={cn(
@@ -156,6 +176,7 @@ export function AlbumGrid({ isMobile }: { isMobile?: boolean }) {
                     onClick={() => useFolderStore.getState().setSelectedFolder(item.id)}
                     className="hover:text-primary hover:underline transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary px-0.5 rounded-sm cursor-pointer"
                     aria-label={`Go back to ${item.name}`}
+                    title={`Go back to ${item.name}`}
                   >
                     {item.name}
                   </button>
@@ -169,8 +190,9 @@ export function AlbumGrid({ isMobile }: { isMobile?: boolean }) {
               type="button"
               onClick={() => setFolderViewMode(selectedFolderId, 'grid')}
               className={cn('border border-border px-2 py-0.5', albumViewMode === 'grid' && 'bg-primary text-primary-foreground')}
-              aria-label="Switch to grid view"
-              title="Grid view"
+              aria-label="Switch to grid view [G]"
+              title="Grid view [G]"
+              aria-keyshortcuts="g"
             >
               <Grid2X2 className="h-3 w-3" />
             </button>
@@ -178,8 +200,9 @@ export function AlbumGrid({ isMobile }: { isMobile?: boolean }) {
               type="button"
               onClick={() => setFolderViewMode(selectedFolderId, 'canvas')}
               className={cn('border border-border px-2 py-0.5', albumViewMode === 'canvas' && 'bg-primary text-primary-foreground')}
-              aria-label="Switch to canvas view"
-              title="Canvas view"
+              aria-label="Switch to canvas view [V]"
+              title="Canvas view [V]"
+              aria-keyshortcuts="v"
             >
               <Orbit className="h-3 w-3" />
             </button>

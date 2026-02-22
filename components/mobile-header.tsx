@@ -19,6 +19,7 @@ export function MobileHeader({ onMenuClick }: MobileHeaderProps) {
                     onClick={onMenuClick}
                     className="h-10 w-10 border-2 border-transparent hover:border-border rounded-none"
                     aria-label="Open menu"
+                    title="Open menu"
                 >
                     <Menu className="h-6 w-6" aria-hidden="true" />
                 </Button>
