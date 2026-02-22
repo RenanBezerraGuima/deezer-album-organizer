@@ -57,3 +57,7 @@
 ## 2026-05-25 - [Minimizing Re-renders in Large Grids during Drag and Settings Changes]
 **Learning:** In large grids, every item subscribing to global settings (like `streamingProvider`) or the parent re-rendering on every drag step causes O(N) reconciliations. Extracting items into memoized components with granular boolean props (`isDropTarget`) and moving global subscriptions into lazy-rendered leaf components (like context menu items) reduces overhead to O(1) or O(Constant) for most updates. Stabilizing handlers with `useCallback` and `getState()` is crucial for this isolation to work.
 **Action:** Always lift high-frequency or global subscriptions out of large list items. Use memoized wrappers with minimal boolean props for list items.
+
+## 2026-06-15 - [Breadcrumb Segment Stability and useShallow Effectiveness]
+**Learning:** Even with structural sharing and result-level caching, recursive path constructions (like breadcrumbs) can return new object references for segments on every call. This causes `useShallow` to fail shallow equality checks on the resulting array. Using a `WeakMap` to cache the individual segment objects `{ id, name }` keyed by the stable `Folder` object ensures stable references within the array, allowing `useShallow` to correctly skip redundant re-renders.
+**Action:** When returning arrays of objects from recursive lookups on immutable trees, cache the individual segment objects using `WeakMap` to preserve reference stability for `useShallow` and `React.memo`.

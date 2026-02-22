@@ -124,6 +124,20 @@ const breadcrumbCache = new WeakMap<
   Map<string, { id: string; name: string }[]>
 >();
 
+// Performance: Cache for individual breadcrumb segment objects to ensure stable references across re-renders.
+// Since the store uses structural sharing, unmodified folders retain their references.
+// Caching the {id, name} objects allows useShallow to skip re-renders for unchanged paths.
+const segmentCache = new WeakMap<Folder, { id: string; name: string }>();
+
+const getBreadcrumbSegment = (folder: Folder): { id: string; name: string } => {
+  let segment = segmentCache.get(folder);
+  if (!segment) {
+    segment = { id: folder.id, name: folder.name };
+    segmentCache.set(folder, segment);
+  }
+  return segment;
+};
+
 export const findFolder = (folders: Folder[], id: string): Folder | null => {
   let cache = findCache.get(folders);
   if (!cache) {
@@ -162,13 +176,13 @@ export const getBreadcrumb = (
 
   for (const folder of folders) {
     if (folder.id === targetId) {
-      const result = [{ id: folder.id, name: folder.name }];
+      const result = [getBreadcrumbSegment(folder)];
       cache.set(targetId, result);
       return result;
     }
     const subPath = getBreadcrumb(folder.subfolders, targetId);
     if (subPath.length > 0) {
-      const result = [{ id: folder.id, name: folder.name }, ...subPath];
+      const result = [getBreadcrumbSegment(folder), ...subPath];
       cache.set(targetId, result);
       return result;
     }
